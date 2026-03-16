@@ -1,0 +1,20 @@
+{
+  "name": "Malaka Sir's SFT Class Dashboard",
+  "short_name": "SFT Dashboard",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#141218",
+  "theme_color": "#141218",
+  "icons": [
+    {
+      "src": "logo.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "logo.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}

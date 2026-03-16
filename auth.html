@@ -1,0 +1,371 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SFT Admin - Login</title>
+    <!-- Material Google Fonts & Icons (Upgraded to Material Symbols Rounded MD3) -->
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,400,1,0" rel="stylesheet">
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="icon" type="image/png" href="logo.png">
+
+    <!-- MD3 Dark Mode Embedded Styles -->
+    <style>
+        :root {
+            /* Material 3 Dark Theme Baseline Tokens (Synchronized) */
+            --md-sys-color-primary: #D0BCFF;
+            --md-sys-color-on-primary: #381E72;
+            --md-sys-color-primary-container: #4F378B;
+            --md-sys-color-on-primary-container: #EADDFF;
+            
+            --md-sys-color-secondary: #CCC2DC;
+            --md-sys-color-secondary-container: #4A4458;
+
+            --md-sys-color-error: #F2B8B5;
+            --md-sys-color-error-container: #8C1D18;
+            --md-sys-color-on-error-container: #F9DEDC;
+
+            --md-sys-color-background: #141218;
+            --md-sys-color-on-background: #E6E0E9;
+            --md-sys-color-surface: #141218;
+            --md-sys-color-surface-container: #211F26;
+            --md-sys-color-surface-container-high: #2B2930;
+            --md-sys-color-surface-container-highest: #36343B;
+
+            --md-sys-color-outline: #938F99;
+            --md-sys-color-outline-variant: #49454F;
+            
+            --md-sys-shape-corner-extra-large: 28px;
+            --md-sys-shape-corner-full: 100px;
+            
+            --transition-standard: all 0.4s cubic-bezier(0.1, 0.7, 0.1, 1);
+            --shadow-lg: 0 12px 16px 4px rgba(0, 0, 0, 0.2), 0 4px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        body.auth-page {
+            background-color: var(--md-sys-color-background);
+            color: var(--md-sys-color-on-background);
+            font-family: 'Roboto', sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            padding: 20px;
+        }
+
+        .card {
+            background-color: var(--md-sys-color-surface-container);
+            border-radius: var(--md-sys-shape-corner-extra-large);
+            box-shadow: var(--shadow-lg);
+            border: 1px solid var(--md-sys-color-outline-variant);
+        }
+
+        .auth-container {
+            width: 100%;
+            max-width: 420px;
+            padding: 40px 32px;
+            animation: formFadeIn 0.5s cubic-bezier(0.1, 0.7, 0.1, 1) forwards;
+        }
+
+        @keyframes formFadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .auth-header {
+            text-align: center;
+            margin-bottom: 32px;
+        }
+
+        .auth-logo {
+            width: 100px;
+            height: 100px;
+            border-radius: 20px; /* M3 Shape */
+            margin-bottom: 24px;
+            object-fit: cover;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+            background: var(--md-sys-color-surface-container-highest);
+            padding: 8px;
+        }
+
+        .auth-header h2 {
+            font-size: 24px;
+            font-weight: 500;
+            margin: 0 0 8px 0;
+            color: var(--md-sys-color-on-background);
+        }
+
+        .auth-header p {
+            color: var(--md-sys-color-outline);
+            margin: 0;
+            font-size: 14px;
+        }
+
+        .form-group {
+            margin-bottom: 24px;
+            position: relative;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 14px;
+            color: var(--md-sys-color-outline);
+            margin-bottom: 8px;
+            font-weight: 500;
+        }
+
+        .input-with-icon {
+            position: relative;
+            display: flex;
+            align-items: center;
+        }
+
+        .input-with-icon i {
+            position: absolute;
+            left: 16px;
+            color: var(--md-sys-color-outline);
+            font-size: 20px;
+            transition: var(--transition-standard);
+        }
+
+        .input-with-icon input {
+            width: 100%;
+            padding: 16px 16px 16px 48px;
+            background-color: var(--md-sys-color-surface-container-highest);
+            border: none;
+            border-bottom: 2px solid var(--md-sys-color-outline);
+            border-radius: 12px 12px 0 0;
+            color: var(--md-sys-color-on-background);
+            font-size: 16px;
+            font-family: inherit;
+            transition: var(--transition-standard);
+            box-sizing: border-box;
+        }
+
+        .input-with-icon input:focus {
+            outline: none;
+            border-bottom-color: var(--md-sys-color-primary);
+            background-color: var(--md-sys-color-surface-container-high);
+        }
+
+        .input-with-icon input:focus + i {
+            color: var(--md-sys-color-primary);
+        }
+
+        .btn {
+            width: 100%;
+            padding: 12px 24px;
+            border-radius: var(--md-sys-shape-corner-full);
+            font-size: 14px;
+            font-weight: 500;
+            border: none;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            transition: var(--transition-standard);
+            font-family: inherit;
+            box-sizing: border-box;
+            overflow: hidden;
+        }
+
+        .btn-primary {
+            background-color: var(--md-sys-color-primary);
+            color: var(--md-sys-color-on-primary);
+        }
+
+        .btn-primary:hover {
+            background-color: #E8DEF8;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+        }
+
+        .btn-outline {
+            background-color: transparent;
+            color: var(--md-sys-color-primary);
+            border: 1px solid var(--md-sys-color-outline);
+        }
+
+        .btn-outline:hover {
+            background-color: rgba(208, 188, 255, 0.08);
+            border-color: var(--md-sys-color-primary);
+        }
+
+        .divider {
+            display: flex;
+            align-items: center;
+            text-align: center;
+            margin: 24px 0;
+            color: var(--md-sys-color-outline);
+            font-size: 12px;
+        }
+
+        .divider::before, .divider::after {
+            content: '';
+            flex: 1;
+            border-bottom: 1px solid var(--md-sys-color-outline-variant);
+        }
+
+        .divider span {
+            padding: 0 16px;
+        }
+
+        .text-link {
+            color: var(--md-sys-color-primary);
+            text-decoration: none;
+            font-weight: 500;
+            transition: var(--transition-standard);
+        }
+
+        .text-link:hover {
+            color: #E8DEF8;
+            text-decoration: underline;
+        }
+
+        .form-options {
+            display: flex;
+            justify-content: flex-end;
+            margin-top: -12px;
+            margin-bottom: 24px;
+            font-size: 14px;
+        }
+
+        .auth-footer {
+            text-align: center;
+            font-size: 14px;
+            color: var(--md-sys-color-outline);
+        }
+
+        .d-none { display: none !important; }
+        .active { display: block; animation: formFadeIn 0.4s ease forwards; }
+
+        /* Spinner */
+        #loading-overlay {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(20, 18, 24, 0.8);
+            backdrop-filter: blur(4px);
+            z-index: 9999;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        .spinner {
+            width: 48px;
+            height: 48px;
+            border: 4px solid var(--md-sys-color-surface-container-high);
+            border-top: 4px solid var(--md-sys-color-primary);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+    </style>
+
+    <!-- Supabase Client Setup -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="js/supabase.js" defer></script>
+    <script src="js/auth.js" defer></script>
+</head>
+
+<body class="auth-page">
+    <!-- Loading Overlay -->
+    <div id="loading-overlay" class="d-none">
+        <div class="spinner"></div>
+    </div>
+
+    <!-- Toast Container -->
+    <div id="toast-container"></div>
+
+    <div class="auth-container card">
+        <div class="auth-header">
+            <img src="logo.png" alt="SFT Logo" class="auth-logo" onerror="this.src='https://ui-avatars.com/api/?name=SFT&background=random&size=128'">
+            <h2>Welcome Back</h2>
+            <p>Malaka Sir's SFT Class Dashboard</p>
+        </div>
+
+        <!-- Login Form -->
+        <form id="login-form" class="auth-form active">
+            <div class="form-group">
+                <label for="login-email">Email</label>
+                <div class="input-with-icon">
+                    <i class="material-symbols-rounded">email</i>
+                    <input type="email" id="login-email" required placeholder=" ">
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="login-password">Password</label>
+                <div class="input-with-icon">
+                    <i class="material-symbols-rounded">lock</i>
+                    <input type="password" id="login-password" required placeholder=" ">
+                </div>
+            </div>
+            <div class="form-options">
+                <a href="#" class="text-link" id="show-forgot-btn">Forgot Password?</a>
+            </div>
+            <button type="submit" class="btn btn-primary btn-block">Log In</button>
+
+            <div class="divider">
+                <span>OR</span>
+            </div>
+
+            <button type="button" id="google-login-btn" class="btn btn-outline btn-block">
+                <img src="https://fonts.gstatic.com/s/i/productlogos/googleg/v6/24px.svg" alt="Google" style="width: 20px; height: 20px;">
+                Continue with Google
+            </button>
+
+            <div class="auth-footer mt-3">
+                <p>Don't have an account? <a href="#" class="text-link" id="show-signup-btn">Sign Up</a></p>
+            </div>
+        </form>
+
+        <!-- Signup Form -->
+        <form id="signup-form" class="auth-form d-none">
+            <div class="form-group">
+                <label for="signup-name">Display Name</label>
+                <div class="input-with-icon">
+                    <i class="material-symbols-rounded">person</i>
+                    <input type="text" id="signup-name" required placeholder=" ">
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="signup-email">Email</label>
+                <div class="input-with-icon">
+                    <i class="material-symbols-rounded">email</i>
+                    <input type="email" id="signup-email" required placeholder=" ">
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="signup-password">Password</label>
+                <div class="input-with-icon">
+                    <i class="material-symbols-rounded">lock</i>
+                    <input type="password" id="signup-password" minlength="6" required placeholder=" ">
+                </div>
+            </div>
+            <button type="submit" class="btn btn-primary btn-block">Create Account</button>
+            <div class="auth-footer mt-3">
+                <p>Already have an account? <a href="#" class="text-link" id="show-login-btn">Log In</a></p>
+            </div>
+        </form>
+
+        <!-- Forgot Password Form -->
+        <form id="forgot-form" class="auth-form d-none">
+            <p style="color: var(--md-sys-color-outline); font-size: 14px; margin-bottom: 24px; text-align: center;">Enter your email address and we'll send you a link to reset your password.</p>
+            <div class="form-group">
+                <label for="forgot-email">Email</label>
+                <div class="input-with-icon">
+                    <i class="material-symbols-rounded">email</i>
+                    <input type="email" id="forgot-email" required placeholder=" ">
+                </div>
+            </div>
+            <button type="submit" class="btn btn-primary btn-block">Send Reset Link</button>
+            <div class="auth-footer mt-3">
+                <p><a href="#" class="text-link" id="back-to-login-btn">Back to Log In</a></p>
+            </div>
+        </form>
+    </div>
+</body>
+
+</html>
