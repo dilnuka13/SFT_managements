@@ -1,10 +1,10 @@
 const CACHE_NAME = 'sft-dashboard-v1';
 const ASSETS_TO_CACHE = [
-  '/',
-  '/index.html',
-  '/auth.html',
-  '/css/style.css',
-  '/logo.png',
+  './',
+  'index.html',
+  'auth.html',
+  'css/style.css',
+  'logo.png',
   'https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap',
   'https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,400,1,0'
 ];
