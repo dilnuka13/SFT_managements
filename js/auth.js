@@ -28,30 +28,35 @@ document.addEventListener('DOMContentLoaded', () => {
     const checkUser = async () => {
         try {
             const { data: { session } } = await supabase.auth.getSession();
-            const isAuthPage = window.location.pathname.endsWith('auth.html') || window.location.pathname === '/auth.html';
+            const currPath = window.location.pathname;
+            const isAuthPage = currPath.endsWith('auth.html');
 
             if (session) {
+                // If on auth.html with a session, go to index.html
                 if (isAuthPage) {
                     window.location.replace('index.html');
                 }
             } else {
+                // If NOT on auth.html and NO session, go to auth.html
                 if (!isAuthPage) {
                     window.location.replace('auth.html');
                 }
             }
         } catch (err) {
-            console.error("Session Check Error (LocalStorage blocked?):", err);
+            console.error("Session Check Error:", err);
             if (!window.location.pathname.endsWith('auth.html')) {
-                window.location.replace('auth.html'); // Ensure unauth state redirects
+                window.location.replace('auth.html');
             }
         }
     };
 
     // Listen to session changes
     supabase.auth.onAuthStateChange((event, session) => {
-        if (event === 'SIGNED_IN') {
+        const isAuthPage = window.location.pathname.endsWith('auth.html');
+        
+        if (event === 'SIGNED_IN' && isAuthPage) {
             window.location.replace('index.html');
-        } else if (event === 'SIGNED_OUT') {
+        } else if (event === 'SIGNED_OUT' && !isAuthPage) {
             window.location.replace('auth.html');
         }
     });
@@ -148,7 +153,9 @@ document.addEventListener('DOMContentLoaded', () => {
                 showToast("Starting Google Login...", "default");
                 const { data, error } = await supabase.auth.signInWithOAuth({
                     provider: 'google',
-                    options: { redirectTo: window.location.origin + '/index.html' }
+                    options: { 
+                        redirectTo: window.location.href.split('auth.html')[0] + 'index.html'
+                    }
                 });
                 if (error) showToast("Supabase specific error: " + error.message, 'error');
             } catch (err) {
