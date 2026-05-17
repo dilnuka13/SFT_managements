@@ -10,6 +10,23 @@ document.addEventListener('DOMContentLoaded', () => {
 
     let batchChartInstance = null;
     let typeChartInstance = null;
+    let cycleChartInstance = null;
+
+    // --- Animation Helper ---
+    const animateValue = (obj, start, end, duration) => {
+        let startTimestamp = null;
+        const step = (timestamp) => {
+            if (!startTimestamp) startTimestamp = timestamp;
+            const progress = Math.min((timestamp - startTimestamp) / duration, 1);
+            obj.innerHTML = Math.floor(progress * (end - start) + start);
+            if (progress < 1) {
+                window.requestAnimationFrame(step);
+            } else {
+                obj.innerHTML = end;
+            }
+        };
+        window.requestAnimationFrame(step);
+    };
 
     // --- Init Date Filter (15th to 15th) ---
     const initDateFilters = () => {
@@ -115,7 +132,7 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         });
 
-        document.getElementById('dash-total-days').textContent = uniqueDates.size;
+        animateValue(document.getElementById('dash-total-days'), 0, uniqueDates.size, 1500);
         renderBatchChart(batchCounts);
         renderTypeChart(typeCounts);
     };
@@ -133,7 +150,7 @@ document.addEventListener('DOMContentLoaded', () => {
             aggregated[key].count += entry.paper_count;
         });
 
-        document.getElementById('dash-total-papers').textContent = totalPapers;
+        animateValue(document.getElementById('dash-total-papers'), 0, totalPapers, 1500);
         const tbody = document.querySelector('#dash-paper-table tbody');
         tbody.innerHTML = '';
 
@@ -188,9 +205,106 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     };
 
+    // --- Historical Cycle Chart ---
+    const loadHistoricalData = async () => {
+        const { data: { user } } = await supabase.auth.getUser();
+        if (!user) return;
+
+        try {
+            const { data: sessions, error } = await supabase
+                .from('instructor_sessions')
+                .select('date')
+                .eq('user_id', user.id)
+                .order('date', { ascending: true });
+
+            if (error) throw error;
+
+            const cycles = {};
+            sessions.forEach(sess => {
+                const dateObj = new Date(sess.date);
+                let cycleYear = dateObj.getFullYear();
+                let cycleMonth = dateObj.getMonth();
+                if (dateObj.getDate() > 15) {
+                    cycleMonth += 1;
+                    if (cycleMonth > 11) {
+                        cycleMonth = 0;
+                        cycleYear += 1;
+                    }
+                }
+                const monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+                const cycleName = `${monthNames[cycleMonth]} ${cycleYear}`;
+
+                if (!cycles[cycleName]) cycles[cycleName] = new Set();
+                cycles[cycleName].add(sess.date);
+            });
+
+            const labels = [];
+            const data = [];
+            const sortedCycleNames = Object.keys(cycles).sort((a, b) => {
+                const [mA, yA] = a.split(' ');
+                const [mB, yB] = b.split(' ');
+                const monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+                const dateA = new Date(parseInt(yA), monthNames.indexOf(mA), 15);
+                const dateB = new Date(parseInt(yB), monthNames.indexOf(mB), 15);
+                return dateA - dateB;
+            });
+
+            const recentCycles = sortedCycleNames.slice(-6);
+
+            recentCycles.forEach(c => {
+                labels.push(c);
+                data.push(cycles[c].size);
+            });
+
+            renderCycleChart(labels, data);
+
+        } catch (error) {
+            console.error('Failed to load historical data', error);
+        }
+    };
+
+    const renderCycleChart = (labels, data) => {
+        const ctx = document.getElementById('cycle-attendance-chart');
+        if (cycleChartInstance) cycleChartInstance.destroy();
+
+        const gradient = ctx.getContext('2d').createLinearGradient(0, 0, 0, 400);
+        gradient.addColorStop(0, 'rgba(0, 230, 118, 0.8)');
+        gradient.addColorStop(1, 'rgba(0, 230, 118, 0.1)');
+
+        cycleChartInstance = new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: labels.length ? labels : ['No Data'],
+                datasets: [{
+                    label: 'Days Attended',
+                    data: data.length ? data : [0],
+                    backgroundColor: gradient,
+                    borderColor: 'rgba(0, 230, 118, 1)',
+                    borderWidth: 1,
+                    borderRadius: 6,
+                    barThickness: 30
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                animation: { duration: 2000, easing: 'easeOutQuart' },
+                scales: {
+                    y: { beginAtZero: true, grid: { color: 'rgba(255,255,255,0.05)' }, ticks: { stepSize: 1, color: '#888' } },
+                    x: { grid: { display: false }, ticks: { color: '#888' } }
+                },
+                plugins: {
+                    legend: { display: false },
+                    tooltip: { backgroundColor: 'rgba(0,0,0,0.8)', titleColor: '#fff', bodyColor: '#00E676', padding: 12, cornerRadius: 8, displayColors: false }
+                }
+            }
+        });
+    };
+
     // --- Action Listeners ---
     document.getElementById('apply-filter-btn').addEventListener('click', window.loadDashboardData);
     window.loadDashboardData();
+    loadHistoricalData();
 
     // --- EXPORTS & PDF MODAL ---
     const pdfModal = document.getElementById('pdf-modal');
