@@ -1,273 +1,720 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
-    <meta http-equiv="Pragma" content="no-cache">
-    <meta http-equiv="Expires" content="0">
     <title>Exam Papers Tracker</title>
-    <!-- Material Google Fonts & Icons -->
-    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,400,1,0" rel="stylesheet">
-    <link rel="stylesheet" href="css/style.css?v=3">
-    <link rel="icon" type="image/png" href="logo.png">
-    
-    <!-- PWA & Production Meta Tags -->
     <link rel="manifest" href="manifest.json?v=3">
     <meta name="theme-color" content="#000000">
     <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <link rel="apple-touch-icon" href="logo.png">
+    <link rel="icon" type="image/png" href="logo.png">
 
-    <!-- Specific styles for standalone page -->
     <style>
         :root {
-            --md-sys-color-background: #000000;
-            --md-sys-color-on-background: #E3E3E3;
-            --md-sys-color-surface: #0A0A0A;
-            --md-sys-color-surface-container: #111111;
-            --md-sys-color-surface-container-high: #1A1A1A;
-            --md-sys-color-primary: #00E676;
-            --md-sys-color-on-primary: #000000;
-            --md-sys-color-secondary-container: #4A4458;
-            --md-sys-color-on-secondary-container: #E8DEF8;
-            --md-sys-color-outline: #8E918F;
-            --md-sys-color-outline-variant: #444746;
-            --md-sys-color-error: #FF5252;
-            
-            --md-sys-shape-corner-medium: 12px;
-            --md-sys-shape-corner-large: 16px;
-            --md-sys-shape-corner-extra-large: 24px;
-            --md-sys-shape-corner-full: 100px;
-            
-            --transition-standard: all 0.3s cubic-bezier(0.2, 0, 0, 1);
+            --bg: #030303;
+            --surface: #0d0d0d;
+            --surface-2: #151515;
+            --surface-3: #1e1e1e;
+            --primary: #00E676;
+            --primary-dim: rgba(0, 230, 118, 0.12);
+            --primary-glow: rgba(0, 230, 118, 0.35);
+            --on-primary: #000;
+            --text: #f0f0f0;
+            --text-dim: #888;
+            --text-muted: #444;
+            --border: rgba(255,255,255,0.07);
+            --border-lit: rgba(0,230,118,0.3);
+            --error: #FF5252;
+            --radius-sm: 8px;
+            --radius-md: 14px;
+            --radius-lg: 20px;
+            --radius-xl: 28px;
         }
+
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
         body {
-            background-color: var(--md-sys-color-background);
-            color: var(--md-sys-color-on-background);
-            font-family: 'Roboto', sans-serif;
-            margin: 0;
-            padding: 0;
-            padding-top: env(safe-area-inset-top);
-            padding-bottom: env(safe-area-inset-bottom);
+            background: var(--bg);
+            color: var(--text);
+            font-family: 'DM Sans', sans-serif;
+            min-height: 100vh;
+            overflow-x: hidden;
+            padding-bottom: env(safe-area-inset-bottom, 24px);
         }
 
-        /* Glassmorphism Header */
+        /* Ambient background grid */
+        body::before {
+            content: '';
+            position: fixed;
+            inset: 0;
+            background-image:
+                linear-gradient(rgba(0,230,118,0.025) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(0,230,118,0.025) 1px, transparent 1px);
+            background-size: 48px 48px;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        /* ─── HEADER ─────────────────────────────────── */
         header {
+            position: sticky;
+            top: 0;
+            z-index: 200;
             display: flex;
             align-items: center;
             justify-content: space-between;
-            padding: 16px 24px;
-            background: rgba(20, 18, 24, 0.65);
+            padding: 14px 24px;
+            background: rgba(3,3,3,0.8);
             backdrop-filter: blur(24px);
-            -webkit-backdrop-filter: blur(24px);
-            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
-            position: sticky;
-            top: 0;
-            z-index: 100;
+            border-bottom: 1px solid var(--border);
         }
 
-        .container {
-            max-width: 1000px;
+        .header-brand {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .header-brand .icon-wrap {
+            width: 36px; height: 36px;
+            background: var(--primary-dim);
+            border: 1px solid var(--border-lit);
+            border-radius: var(--radius-sm);
+            display: grid; place-items: center;
+        }
+
+        .header-brand .icon-wrap i {
+            font-size: 20px;
+            color: var(--primary);
+        }
+
+        .header-brand h1 {
+            font-family: 'Space Mono', monospace;
+            font-size: 15px;
+            font-weight: 700;
+            letter-spacing: -0.3px;
+            color: var(--text);
+        }
+
+        .year-badge {
+            font-family: 'Space Mono', monospace;
+            font-size: 11px;
+            color: var(--primary);
+            background: var(--primary-dim);
+            border: 1px solid var(--border-lit);
+            padding: 3px 10px;
+            border-radius: 100px;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+        .year-badge:hover { background: rgba(0,230,118,0.2); }
+
+        .header-actions { display: flex; gap: 8px; align-items: center; }
+
+        .icon-btn {
+            width: 36px; height: 36px;
+            border-radius: var(--radius-sm);
+            border: 1px solid var(--border);
+            background: var(--surface-2);
+            color: var(--text-dim);
+            display: grid; place-items: center;
+            cursor: pointer;
+            transition: all 0.2s;
+            text-decoration: none;
+        }
+        .icon-btn:hover { border-color: var(--border-lit); color: var(--primary); background: var(--primary-dim); }
+        .icon-btn i { font-size: 18px; }
+
+        /* ─── LAYOUT ─────────────────────────────────── */
+        .page-wrap {
+            position: relative;
+            z-index: 1;
+            max-width: 1100px;
             margin: 0 auto;
-            padding: 24px;
-            padding-bottom: calc(env(safe-area-inset-bottom, 24px) + 24px);
+            padding: 28px 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
         }
 
-        .card {
-            background: rgba(43, 41, 48, 0.5); /* Semi-transparent */
-            backdrop-filter: blur(16px);
-            -webkit-backdrop-filter: blur(16px);
-            border-radius: var(--md-sys-shape-corner-extra-large);
-            padding: 24px;
-            box-shadow: 0 4px 24px rgba(0,0,0,0.2), inset 0 0 0 1px rgba(255, 255, 255, 0.05);
-            margin-bottom: 24px;
-        }
-
-        /* Form Elements MD3 */
-        .form-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; margin-bottom: 16px; }
-        .form-group label { display: block; font-size: 14px; color: var(--md-sys-color-outline); margin-bottom: 8px; }
-        
-        input[type="text"], input[type="number"], input[type="date"], input[type="time"], select {
-            width: 100%;
-            padding: 16px;
-            background-color: var(--md-sys-color-surface-container-high);
-            border: none;
-            border-bottom: 2px solid var(--md-sys-color-outline-variant);
-            border-radius: 4px 4px 0 0;
-            color: var(--md-sys-color-on-background);
-            font-size: 16px;
-            font-family: inherit;
-            box-sizing: border-box;
-        }
-        input:focus, select:focus { outline: none; border-bottom-color: var(--md-sys-color-primary); background-color: #403d47; }
-        
-        .btn {
-            padding: 10px 24px; border-radius: var(--md-sys-shape-corner-full); font-size: 14px; font-weight: 500; border: none; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; gap: 8px; height: 40px;
-        }
-        .btn-primary { background-color: var(--md-sys-color-primary); color: var(--md-sys-color-on-primary); }
-        .btn-primary:hover { background-color: #66FFA6; box-shadow: 0 0 16px rgba(0, 230, 118, 0.4); }
-        .btn-outline { background-color: transparent; color: var(--md-sys-color-primary); border: 1px solid var(--md-sys-color-outline-variant); }
-        .btn-outline:hover { background-color: rgba(0, 230, 118, 0.08); border-color: var(--md-sys-color-primary); box-shadow: inset 0 0 8px rgba(0, 230, 118, 0.1); }
-        .d-none { display: none !important; }
-
-        .dashboard-grid {
+        /* ─── STAT CARDS ─────────────────────────────── */
+        .stats-row {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 16px;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 14px;
         }
 
         .stat-card {
-            background: rgba(54, 52, 59, 0.5);
-            backdrop-filter: blur(12px);
-            -webkit-backdrop-filter: blur(12px);
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-lg);
             padding: 20px;
-            border-radius: var(--md-sys-shape-corner-large);
-            text-align: center;
-            box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.05);
+            cursor: pointer;
+            transition: all 0.25s cubic-bezier(0.2,0,0,1);
+            position: relative;
+            overflow: hidden;
         }
 
-        .stat-card i {
-            font-size: 32px;
-            color: var(--md-sys-color-primary);
+        .stat-card::after {
+            content: '';
+            position: absolute;
+            bottom: 0; left: 0; right: 0;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, var(--primary), transparent);
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+
+        .stat-card:hover {
+            border-color: var(--border-lit);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 32px rgba(0,230,118,0.08);
+        }
+        .stat-card:hover::after { opacity: 1; }
+
+        .stat-icon {
+            width: 40px; height: 40px;
+            background: var(--primary-dim);
+            border-radius: var(--radius-sm);
+            display: grid; place-items: center;
+            margin-bottom: 14px;
+        }
+        .stat-icon i { font-size: 22px; color: var(--primary); }
+
+        .stat-label {
+            font-size: 11px;
+            font-weight: 600;
+            letter-spacing: 0.8px;
+            text-transform: uppercase;
+            color: var(--text-muted);
+            margin-bottom: 6px;
+        }
+
+        .stat-value {
+            font-family: 'Space Mono', monospace;
+            font-size: 22px;
+            font-weight: 700;
+            color: var(--text);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .stat-hint {
+            font-size: 10px;
+            color: var(--primary);
+            margin-top: 6px;
+            opacity: 0.7;
+        }
+
+        /* ─── TWO COLUMN LAYOUT ──────────────────────── */
+        .two-col {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            align-items: start;
+        }
+
+        /* ─── CARD ───────────────────────────────────── */
+        .card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-xl);
+            padding: 24px;
+            transition: border-color 0.3s;
+        }
+
+        .card-title {
+            font-family: 'Space Mono', monospace;
+            font-size: 13px;
+            font-weight: 700;
+            letter-spacing: -0.2px;
+            color: var(--text);
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .card-title i { font-size: 18px; color: var(--primary); }
+
+        /* ─── FORM ───────────────────────────────────── */
+        .form-group { margin-bottom: 14px; }
+
+        .form-group label {
+            display: block;
+            font-size: 11px;
+            font-weight: 600;
+            letter-spacing: 0.6px;
+            text-transform: uppercase;
+            color: var(--text-dim);
+            margin-bottom: 6px;
+        }
+
+        .field-hint {
+            display: block;
+            font-size: 10px;
+            color: var(--text-muted);
+            text-transform: none;
+            letter-spacing: 0;
+            font-weight: 400;
+            margin-top: 2px;
+        }
+
+        input[type="text"],
+        input[type="number"],
+        input[type="date"],
+        input[type="time"],
+        select {
+            width: 100%;
+            background: var(--surface-2);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-sm);
+            color: var(--text);
+            font-family: 'DM Sans', sans-serif;
+            font-size: 15px;
+            padding: 12px 14px;
+            transition: all 0.2s;
+            -webkit-appearance: none;
+            appearance: none;
+        }
+
+        input:focus, select:focus {
+            outline: none;
+            border-color: var(--primary);
+            background: rgba(0,230,118,0.04);
+            box-shadow: 0 0 0 3px var(--primary-dim);
+        }
+
+        select option { background: #1a1a1a; color: #f0f0f0; }
+
+        .input-row { display: grid; grid-template-columns: 1fr auto; gap: 8px; align-items: end; }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 7px;
+            padding: 10px 20px;
+            border-radius: var(--radius-sm);
+            font-family: 'DM Sans', sans-serif;
+            font-size: 14px;
+            font-weight: 600;
+            border: none;
+            cursor: pointer;
+            transition: all 0.2s;
+            height: 46px;
+        }
+
+        .btn-primary {
+            background: var(--primary);
+            color: var(--on-primary);
+            width: 100%;
+            margin-top: 6px;
+            font-size: 15px;
+            border-radius: var(--radius-md);
+            height: 50px;
+        }
+        .btn-primary:hover {
+            background: #33ff8e;
+            box-shadow: 0 0 24px var(--primary-glow);
+            transform: translateY(-1px);
+        }
+        .btn-primary:active { transform: translateY(0); }
+
+        .btn-icon {
+            width: 46px; height: 46px;
+            background: var(--surface-3);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-sm);
+            color: var(--text-dim);
+        }
+        .btn-icon:hover { border-color: var(--primary); color: var(--primary); }
+
+        .d-none { display: none !important; }
+
+        /* ─── ANALYTICS CARD (FULL WIDTH) ────────────── */
+        .analytics-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-xl);
+            padding: 24px;
+            overflow: hidden;
+        }
+
+        .analytics-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 20px;
+        }
+
+        /* ─── 3D Chart Container ─────────────────────── */
+        .chart-3d-wrap {
+            perspective: 800px;
+            height: 260px;
+            width: 100%;
+            margin-bottom: 24px;
+        }
+
+        .chart-3d-inner {
+            width: 100%;
+            height: 100%;
+            transform-style: preserve-3d;
+            animation: tiltFloat 8s ease-in-out infinite;
+        }
+
+        @keyframes tiltFloat {
+            0%, 100% { transform: rotateX(2deg) rotateY(-1deg); }
+            25% { transform: rotateX(1deg) rotateY(2deg); }
+            50% { transform: rotateX(-1deg) rotateY(1deg); }
+            75% { transform: rotateX(2deg) rotateY(-2deg); }
+        }
+
+        /* ─── RECENT TABLE ───────────────────────────── */
+        .table-wrap { overflow-x: auto; }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th {
+            font-size: 10px;
+            font-weight: 700;
+            letter-spacing: 0.8px;
+            text-transform: uppercase;
+            color: var(--text-muted);
+            padding: 10px 12px;
+            text-align: left;
+            border-bottom: 1px solid var(--border);
+        }
+
+        td {
+            font-size: 13px;
+            padding: 12px 12px;
+            border-bottom: 1px solid rgba(255,255,255,0.04);
+            color: var(--text);
+            vertical-align: middle;
+        }
+
+        tr:last-child td { border-bottom: none; }
+
+        tr:hover td { background: rgba(255,255,255,0.02); }
+
+        .cat-badge {
+            display: inline-block;
+            background: var(--primary-dim);
+            color: var(--primary);
+            border: 1px solid rgba(0,230,118,0.2);
+            padding: 3px 10px;
+            border-radius: 100px;
+            font-size: 11px;
+            font-weight: 700;
+        }
+
+        .paper-num {
+            font-family: 'Space Mono', monospace;
+            font-weight: 700;
+            font-size: 14px;
+        }
+
+        /* ─── MODAL ──────────────────────────────────── */
+        .modal-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.85);
+            backdrop-filter: blur(12px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            padding: 20px;
+            animation: fadeIn 0.2s ease;
+        }
+
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+        .modal-box {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-xl);
+            padding: 28px;
+            width: 100%;
+            max-width: 480px;
+            animation: popIn 0.3s cubic-bezier(0.2,0,0,1);
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        @keyframes popIn {
+            from { transform: scale(0.92) translateY(8px); opacity: 0; }
+            to { transform: scale(1) translateY(0); opacity: 1; }
+        }
+
+        .modal-title {
+            font-family: 'Space Mono', monospace;
+            font-size: 18px;
+            font-weight: 700;
             margin-bottom: 8px;
         }
 
-        .stat-card h3 {
-            margin: 0;
-            font-size: 14px;
-            color: var(--md-sys-color-outline);
+        .modal-sub {
+            font-size: 13px;
+            color: var(--text-dim);
+            margin-bottom: 24px;
         }
 
-        .stat-card .value {
-            font-size: 24px;
-            font-weight: bold;
-            margin-top: 8px;
+        .year-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
         }
 
-        table { width: 100%; border-collapse: collapse; margin-top: 16px; }
-        th, td { padding: 12px; text-align: left; border-bottom: 1px solid var(--md-sys-color-outline-variant); }
-        th { color: var(--md-sys-color-outline); font-weight: 500; }
-        
-        #toast-container { position: fixed; top: 20px; right: 20px; z-index: 9999; }
-        .toast { background: var(--md-sys-color-surface-container-high); color: var(--md-sys-color-on-background); padding: 16px 24px; border-radius: 8px; margin-bottom: 10px; box-shadow: 0 4px 12px rgba(0,0,0,0.5); display: flex; align-items: center; gap: 12px; animation: slideIn 0.3s ease; }
-        .toast.success i { color: #81c784; }
-        .toast.error i { color: var(--md-sys-color-error); }
-        @keyframes slideIn { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+        .year-btn {
+            background: var(--surface-2);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-md);
+            color: var(--text);
+            font-family: 'Space Mono', monospace;
+            font-size: 22px;
+            font-weight: 700;
+            padding: 22px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .year-btn:hover {
+            border-color: var(--primary);
+            background: var(--primary-dim);
+            color: var(--primary);
+            transform: scale(1.02);
+            box-shadow: 0 0 20px var(--primary-glow);
+        }
 
-        /* Modal Styles */
-        .modal-overlay {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
-            background: rgba(0,0,0,0.8); backdrop-filter: blur(8px);
-            display: flex; justify-content: center; align-items: center; z-index: 10000;
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
         }
-        .modal { 
-            width: 90%; max-width: 400px; 
-            animation: modalIn 0.3s cubic-bezier(0.2, 0, 0, 1); 
-            text-align: center;
+
+        /* ─── TOAST ──────────────────────────────────── */
+        #toast-container {
+            position: fixed;
+            bottom: 28px;
+            right: 20px;
+            z-index: 9999;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
         }
-        @keyframes modalIn { from { transform: scale(0.9); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+
+        .toast {
+            background: var(--surface-3);
+            border: 1px solid var(--border);
+            color: var(--text);
+            padding: 14px 20px;
+            border-radius: var(--radius-md);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 13px;
+            font-weight: 500;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.6);
+            animation: toastIn 0.3s ease;
+            min-width: 260px;
+            transition: opacity 0.3s, transform 0.3s;
+        }
+
+        @keyframes toastIn {
+            from { transform: translateX(110%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+
+        .toast.success { border-color: rgba(0,230,118,0.3); }
+        .toast.success i { color: var(--primary); }
+        .toast.error { border-color: rgba(255,82,82,0.3); }
+        .toast.error i { color: var(--error); }
+
+        /* ─── Scrollbar ──────────────────────────────── */
+        ::-webkit-scrollbar { width: 5px; height: 5px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: var(--surface-3); border-radius: 100px; }
+
+        /* ─── RESPONSIVE ─────────────────────────────── */
+        @media (max-width: 768px) {
+            .two-col { grid-template-columns: 1fr; }
+            .stats-row { grid-template-columns: 1fr 1fr; }
+            .stats-row .stat-card:last-child { grid-column: 1 / -1; }
+            .page-wrap { padding: 16px 14px; gap: 16px; }
+            .chart-3d-wrap { height: 200px; }
+        }
+
+        @media (max-width: 480px) {
+            .stats-row { grid-template-columns: 1fr; }
+            .stats-row .stat-card:last-child { grid-column: auto; }
+        }
+
+        /* Spinning loader */
+        .loader {
+            width: 16px; height: 16px;
+            border: 2px solid rgba(0,230,118,0.2);
+            border-top-color: var(--primary);
+            border-radius: 50%;
+            animation: spin 0.7s linear infinite;
+            display: inline-block;
+        }
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+        /* 3D bar chart glow pulse */
+        @keyframes barPulse {
+            0%, 100% { filter: drop-shadow(0 0 4px rgba(0,230,118,0.4)); }
+            50% { filter: drop-shadow(0 0 12px rgba(0,230,118,0.7)); }
+        }
     </style>
 
     <!-- Supabase & Chart.js -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="js/supabase.js?v=4" defer></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js" defer></script>
-    <script src="js/exam-papers.js?v=4" defer></script>
+    <script src="js/exam-papers.js?v=5" defer></script>
 </head>
 
 <body>
-    <!-- Initial Year Selection Modal -->
+
+    <!-- ─── YEAR SELECTION MODAL ──────────────────────── -->
     <div id="year-selection-modal" class="modal-overlay">
-        <div class="modal card">
-            <h2 style="margin-top: 0; font-size: 24px;">Welcome</h2>
-            <p style="color: var(--md-sys-color-outline); font-size: 14px; margin-bottom: 24px;">Please select the A/L year batch to view and manage their papers.</p>
-            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 16px;">
-                <button type="button" class="btn btn-outline year-quick-btn" data-year="2026" style="padding: 16px; font-size: 18px; height: auto;">2026</button>
-                <button type="button" class="btn btn-outline year-quick-btn" data-year="2027" style="padding: 16px; font-size: 18px; height: auto;">2027</button>
-                <button type="button" class="btn btn-outline year-quick-btn" data-year="2028" style="padding: 16px; font-size: 18px; height: auto;">2028</button>
-                <button type="button" class="btn btn-outline year-quick-btn" data-year="2029" style="padding: 16px; font-size: 18px; height: auto;">2029</button>
+        <div class="modal-box" style="text-align: center; max-width: 360px;">
+            <div style="width:52px;height:52px;background:var(--primary-dim);border:1px solid var(--border-lit);border-radius:14px;display:grid;place-items:center;margin:0 auto 16px;">
+                <i class="material-symbols-rounded" style="font-size:28px;color:var(--primary);">school</i>
+            </div>
+            <div class="modal-title">Select Batch Year</div>
+            <div class="modal-sub">Choose the A/L year to manage papers for</div>
+            <div class="year-grid">
+                <button type="button" class="year-btn year-quick-btn" data-year="2026">2026</button>
+                <button type="button" class="year-btn year-quick-btn" data-year="2027">2027</button>
+                <button type="button" class="year-btn year-quick-btn" data-year="2028">2028</button>
+                <button type="button" class="year-btn year-quick-btn" data-year="2029">2029</button>
             </div>
         </div>
     </div>
 
-    <!-- All Papers Modal -->
+    <!-- ─── ALL PAPERS MODAL ──────────────────────────── -->
     <div id="all-papers-modal" class="modal-overlay d-none">
-        <div class="modal card" style="max-width: 600px; padding: 24px; text-align: left;">
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
-                <h2 style="margin: 0; font-size: 20px;">All Categories - Last Papers</h2>
-                <button type="button" id="close-all-papers-btn" class="btn btn-outline" style="border: none; padding: 8px;"><i class="material-symbols-rounded">close</i></button>
+        <div class="modal-box" style="max-width: 600px;">
+            <div class="modal-header">
+                <div class="modal-title">Category Papers</div>
+                <button type="button" id="close-all-papers-btn" class="icon-btn">
+                    <i class="material-symbols-rounded" style="font-size:20px;">close</i>
+                </button>
             </div>
-            <div style="max-height: 400px; overflow-y: auto;">
-                <table style="width: 100%; border-collapse: collapse;">
-                    <thead>
+            <div class="form-group" style="margin-bottom: 16px;">
+                <select id="modal-category-select">
+                    <option value="All">All Categories (Summary)</option>
+                    <option value="Black">Black</option>
+                    <option value="Wave">Wave</option>
+                    <option value="Flash">Flash</option>
+                    <option value="Scorpion">Scorpion</option>
+                    <option value="Discovery">Discovery</option>
+                    <option value="Vision">Vision</option>
+                    <option value="Ranking">Ranking</option>
+                    <option value="Special">Special</option>
+                    <option value="Home work">Home work</option>
+                    <option value="Falcon">Falcon</option>
+                    <option value="Other">Other</option>
+                </select>
+            </div>
+            <div style="max-height: 380px; overflow-y: auto;">
+                <table>
+                    <thead id="modal-table-head">
                         <tr>
-                            <th style="padding: 12px; border-bottom: 1px solid rgba(255,255,255,0.1); text-align: left;">Category</th>
-                            <th style="padding: 12px; border-bottom: 1px solid rgba(255,255,255,0.1); text-align: left;">Last Paper No.</th>
-                            <th style="padding: 12px; border-bottom: 1px solid rgba(255,255,255,0.1); text-align: left;">Date Given</th>
+                            <th>Category</th>
+                            <th>Last Paper No.</th>
+                            <th>Date Given</th>
                         </tr>
                     </thead>
                     <tbody id="all-papers-tbody">
-                        <!-- Populated by JS -->
                     </tbody>
                 </table>
             </div>
         </div>
     </div>
 
+    <!-- ─── TOAST ─────────────────────────────────────── -->
     <div id="toast-container"></div>
 
+    <!-- ─── HEADER ───────────────────────────────────── -->
     <header>
-        <div style="display: flex; align-items: center; gap: 12px;">
-            <i class="material-symbols-rounded" style="font-size: 28px; color: var(--md-sys-color-primary);">description</i>
-            <h1 style="margin: 0; font-size: 20px; font-weight: 500;">Exam Papers</h1>
+        <div class="header-brand">
+            <div class="icon-wrap">
+                <i class="material-symbols-rounded">description</i>
+            </div>
+            <h1>Exam Papers</h1>
         </div>
-        <div style="display: flex; gap: 8px;">
-            <button type="button" id="change-year-btn" class="btn btn-outline" style="background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); padding: 8px 16px; height: 36px; font-size: 13px;"><i class="material-symbols-rounded" style="font-size: 18px;">event</i></button>
-            <a href="index.html" class="btn btn-outline" style="background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); padding: 8px 16px; height: 36px; font-size: 13px;"><i class="material-symbols-rounded" style="font-size: 18px;">home</i></a>
+        <div class="header-actions">
+            <button type="button" id="change-year-btn" class="year-badge">
+                <i class="material-symbols-rounded" style="font-size:13px;">calendar_month</i>
+                Batch: <span id="display-al-year">–</span>
+            </button>
+            <a href="index.html" class="icon-btn">
+                <i class="material-symbols-rounded" style="font-size:18px;">home</i>
+            </a>
         </div>
     </header>
 
-    <div class="container">
+    <!-- ─── MAIN CONTENT ─────────────────────────────── -->
+    <div class="page-wrap">
 
-        <div class="dashboard-grid" style="margin-bottom: 24px;">
+        <!-- STAT CARDS -->
+        <div class="stats-row open-modal-trigger" style="cursor:pointer;" title="Click to view papers list">
             <div class="stat-card">
-                <i class="material-symbols-rounded">update</i>
-                <h3>Last Added Category</h3>
-                <div class="value" id="stat-last-category">-</div>
+                <div class="stat-icon"><i class="material-symbols-rounded">category</i></div>
+                <div class="stat-label">Last Category</div>
+                <div class="stat-value" id="stat-last-category">–</div>
+                <div class="stat-hint">↑ tap to view list</div>
             </div>
-            <div class="stat-card" id="stat-last-number-card" style="cursor: pointer;" title="Click to view all last paper numbers">
-                <i class="material-symbols-rounded">tag</i>
-                <h3>Last Paper Number</h3>
-                <div class="value" id="stat-last-number">-</div>
-                <div style="font-size: 11px; margin-top: 8px; color: var(--md-sys-color-primary);">Click to view all</div>
+            <div class="stat-card" id="stat-last-number-card">
+                <div class="stat-icon"><i class="material-symbols-rounded">tag</i></div>
+                <div class="stat-label">Last Paper No.</div>
+                <div class="stat-value" id="stat-last-number">–</div>
+                <div class="stat-hint">↑ tap to view list</div>
             </div>
             <div class="stat-card">
-                <i class="material-symbols-rounded">event</i>
-                <h3>Last Added Date</h3>
-                <div class="value" id="stat-last-date">-</div>
+                <div class="stat-icon"><i class="material-symbols-rounded">event</i></div>
+                <div class="stat-label">Last Added Date</div>
+                <div class="stat-value" id="stat-last-date">–</div>
+                <div class="stat-hint">↑ tap to view list</div>
             </div>
         </div>
 
-        <div class="card">
-            <h2 style="margin-top: 0;">Add New Paper Details</h2>
-            <form id="exam-paper-form">
-                <div class="form-row" id="al-year-container" class="d-none">
+        <!-- TWO COLUMN: FORM + RECENT TABLE -->
+        <div class="two-col">
+
+            <!-- ADD PAPER FORM -->
+            <div class="card">
+                <div class="card-title">
+                    <i class="material-symbols-rounded">add_circle</i>
+                    Add New Paper
+                </div>
+
+                <form id="exam-paper-form">
+                    <!-- Hidden year select (synced from modal) -->
+                    <select id="al-year" class="d-none">
+                        <option value="">Select Year</option>
+                        <option value="2026">2026</option>
+                        <option value="2027">2027</option>
+                        <option value="2028">2028</option>
+                        <option value="2029">2029</option>
+                    </select>
+
                     <div class="form-group">
-                        <label>A/L Year</label>
-                        <select id="al-year" disabled>
-                            <option value="">Select Year</option>
-                            <option value="2026">2026</option>
-                            <option value="2027">2027</option>
-                            <option value="2028">2028</option>
-                            <option value="2029">2029</option>
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label>Category</label>
+                        <label>Category <span class="field-hint">Auto-filled from last entry · editable</span></label>
                         <select id="paper-category" required>
                             <option value="">Select Category</option>
                             <option value="Black">Black</option>
@@ -277,77 +724,158 @@
                             <option value="Discovery">Discovery</option>
                             <option value="Vision">Vision</option>
                             <option value="Ranking">Ranking</option>
-                            <option value="Special">Special (Spcisl)</option>
+                            <option value="Special">Special</option>
                             <option value="Home work">Home work</option>
                             <option value="Falcon">Falcon</option>
                             <option value="Other">Other</option>
                         </select>
-                        <input type="text" id="category-other" class="d-none mt-2" placeholder="Type category name" style="margin-top: 8px;">
+                        <input type="text" id="category-other" class="d-none" placeholder="Type custom category name" style="margin-top: 8px;">
                     </div>
-                </div>
 
-                <div class="form-row">
                     <div class="form-group">
-                        <label>Date Given</label>
-                        <input type="date" id="given-date" required>
-                    </div>
-                    <div class="form-group">
-                        <label>Time Given</label>
-                        <input type="time" id="given-time" required>
-                    </div>
-                    <div class="form-group">
-                        <label>Paper Number <span style="font-size: 11px; color: var(--md-sys-color-outline); font-weight: normal;">(Edit manually if needed)</span></label>
-                        <div style="display: flex;">
-                            <input type="number" id="paper-number" required style="border-radius: 4px 0 0 0;">
-                            <button type="button" id="refresh-number-btn" class="btn" style="background: var(--md-sys-color-surface-container-high); border-bottom: 2px solid var(--md-sys-color-outline-variant); border-radius: 0 4px 0 0;"><i class="material-symbols-rounded">refresh</i></button>
+                        <label>Paper Number <span class="field-hint">Auto-incremented · editable</span></label>
+                        <div class="input-row">
+                            <input type="number" id="paper-number" required min="1">
+                            <button type="button" id="refresh-number-btn" class="btn btn-icon">
+                                <i class="material-symbols-rounded" style="font-size:18px;">refresh</i>
+                            </button>
                         </div>
                     </div>
+
+                    <div class="form-group">
+                        <label>Date Given <span class="field-hint">Auto-set to today · editable</span></label>
+                        <input type="date" id="given-date" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Time Given <span class="field-hint">Auto-set to now · editable</span></label>
+                        <input type="time" id="given-time" required>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary">
+                        <i class="material-symbols-rounded">save</i>
+                        Save Paper Record
+                    </button>
+                </form>
+            </div>
+
+            <!-- RECENT PAPERS TABLE -->
+            <div class="card">
+                <div class="card-title">
+                    <i class="material-symbols-rounded">history</i>
+                    Recent Papers
                 </div>
 
-                <div style="display: flex; justify-content: flex-end; margin-top: 16px;">
-                    <button type="submit" class="btn btn-primary"><i class="material-symbols-rounded">add_circle</i> Add Paper Record</button>
+                <!-- Hidden filter -->
+                <select id="filter-year" class="d-none">
+                    <option value="all">All Years</option>
+                    <option value="2026">2026</option>
+                    <option value="2027">2027</option>
+                    <option value="2028">2028</option>
+                    <option value="2029">2029</option>
+                </select>
+
+                <div class="table-wrap">
+                    <table id="recent-papers-table">
+                        <thead>
+                            <tr>
+                                <th>Category</th>
+                                <th>Paper #</th>
+                                <th>Date</th>
+                                <th>Time</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr><td colspan="4" style="text-align:center;color:var(--text-muted);padding:28px;">Select a year to load data</td></tr>
+                        </tbody>
+                    </table>
                 </div>
-            </form>
+            </div>
+
         </div>
 
-        <div class="card">
-            <h2 style="margin-top: 0;">Analytics & Recent Papers (<span id="display-al-year">All</span>)</h2>
-            <div class="form-row d-none">
-                <div class="form-group">
-                    <label>Filter by Year</label>
-                    <select id="filter-year">
-                        <option value="all">All Years</option>
-                        <option value="2026">2026</option>
-                        <option value="2027">2027</option>
-                        <option value="2028">2028</option>
-                        <option value="2029">2029</option>
-                    </select>
+        <!-- ANALYTICS FULL WIDTH -->
+        <div class="analytics-card">
+            <div class="analytics-header">
+                <div class="card-title" style="margin-bottom:0;">
+                    <i class="material-symbols-rounded">bar_chart_4_bars</i>
+                    Analytics — Papers by Category
                 </div>
-            </div>
-            
-            <!-- Chart Container -->
-            <div style="height: 300px; width: 100%; margin-bottom: 24px;">
-                <canvas id="analytics-chart"></canvas>
+                <span id="display-al-year-chart" style="font-family:'Space Mono',monospace;font-size:12px;color:var(--primary);background:var(--primary-dim);padding:4px 12px;border-radius:100px;"></span>
             </div>
 
-            <div style="overflow-x: auto;">
-                <table id="recent-papers-table">
-                    <thead>
-                        <tr>
-                            <th>A/L Year</th>
-                            <th>Category</th>
-                            <th>Paper #</th>
-                            <th>Date</th>
-                            <th>Time</th>
-                            <th>Added On</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <!-- Populated by JS -->
-                    </tbody>
-                </table>
+            <div class="chart-3d-wrap">
+                <div class="chart-3d-inner">
+                    <canvas id="analytics-chart" style="width:100%;height:100%;"></canvas>
+                </div>
             </div>
         </div>
+
     </div>
+
+    <script>
+    // Overwrite the JS inline for the chart rendering with 3D-looking Chart.js options
+    // The actual logic is in exam-papers.js – this just patches the chart style
+    window.__chartOverride = {
+        type: 'bar',
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            animation: {
+                duration: 900,
+                easing: 'easeOutQuart'
+            },
+            plugins: {
+                legend: { display: false },
+                tooltip: {
+                    backgroundColor: '#1a1a1a',
+                    borderColor: 'rgba(0,230,118,0.3)',
+                    borderWidth: 1,
+                    titleColor: '#00E676',
+                    bodyColor: '#f0f0f0',
+                    padding: 12,
+                    cornerRadius: 8,
+                    titleFont: { family: "'Space Mono', monospace", size: 12 }
+                }
+            },
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    ticks: {
+                        stepSize: 1,
+                        color: '#444',
+                        font: { family: "'Space Mono', monospace", size: 11 }
+                    },
+                    grid: { color: 'rgba(255,255,255,0.04)' },
+                    border: { color: 'transparent' }
+                },
+                x: {
+                    ticks: {
+                        color: '#888',
+                        font: { family: "'DM Sans', sans-serif", size: 12, weight: '600' }
+                    },
+                    grid: { display: false },
+                    border: { color: 'rgba(255,255,255,0.06)' }
+                }
+            }
+        },
+        datasetConfig: {
+            backgroundColor: (ctx) => {
+                const chart = ctx.chart;
+                const {ctx: c, chartArea} = chart;
+                if (!chartArea) return '#00E676';
+                const gradient = c.createLinearGradient(0, chartArea.top, 0, chartArea.bottom);
+                gradient.addColorStop(0, 'rgba(0, 230, 118, 0.9)');
+                gradient.addColorStop(1, 'rgba(0, 230, 118, 0.15)');
+                return gradient;
+            },
+            borderColor: '#00E676',
+            borderWidth: 2,
+            borderRadius: { topLeft: 6, topRight: 6 },
+            borderSkipped: false,
+            hoverBackgroundColor: '#33ff8e',
+        }
+    };
+    </script>
 </body>
 </html>
