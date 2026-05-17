@@ -175,3 +175,41 @@ ON storage.objects FOR SELECT
 TO public
 USING (bucket_id = 'avatars');
 */
+
+-- Exam Papers Tracking Table (Public Access)
+CREATE TABLE exam_papers (
+  id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+  al_year INT NOT NULL,
+  category TEXT NOT NULL,
+  paper_number INT NOT NULL,
+  given_date DATE NOT NULL,
+  given_time TIME NOT NULL,
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now()),
+  UNIQUE(al_year, category, paper_number)
+);
+
+ALTER TABLE exam_papers ENABLE ROW LEVEL SECURITY;
+
+-- Allow public access for this specific table
+CREATE POLICY "Public can view exam papers"
+  ON exam_papers FOR SELECT
+  USING (true);
+
+CREATE POLICY "Public can insert exam papers"
+  ON exam_papers FOR INSERT
+  WITH CHECK (true);
+
+CREATE OR REPLACE FUNCTION get_next_exam_paper_number(p_al_year INT, p_category TEXT)
+RETURNS INT AS $$
+DECLARE
+  next_num INT;
+BEGIN
+  SELECT COALESCE(MAX(paper_number), 0) + 1 INTO next_num
+  FROM exam_papers
+  WHERE al_year = p_al_year
+    AND category = p_category;
+    
+  RETURN next_num;
+END;
+$$ LANGUAGE plpgsql SECURITY DEFINER;
+

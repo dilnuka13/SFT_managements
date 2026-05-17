@@ -1,44 +1,44 @@
 @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=Roboto:wght@300;400;500;700&display=swap');
 
 :root {
-  /* Material 3 Dark Theme Baseline Tokens */
-  --md-sys-color-primary: #D0BCFF;
-  --md-sys-color-on-primary: #381E72;
-  --md-sys-color-primary-container: #4F378B;
-  --md-sys-color-on-primary-container: #EADDFF;
+  /* Material 3 Dark Theme Baseline Tokens (Black & Green) */
+  --md-sys-color-primary: #00E676;
+  --md-sys-color-on-primary: #000000;
+  --md-sys-color-primary-container: #005026;
+  --md-sys-color-on-primary-container: #66FFA6;
   
-  --md-sys-color-secondary: #CCC2DC;
-  --md-sys-color-on-secondary: #332D41;
-  --md-sys-color-secondary-container: #4A4458;
-  --md-sys-color-on-secondary-container: #E8DEF8;
+  --md-sys-color-secondary: #81C784;
+  --md-sys-color-on-secondary: #003314;
+  --md-sys-color-secondary-container: #004D20;
+  --md-sys-color-on-secondary-container: #A3E9A4;
 
-  --md-sys-color-tertiary: #EFB8C8;
-  --md-sys-color-on-tertiary: #492532;
-  --md-sys-color-tertiary-container: #633B48;
-  --md-sys-color-on-tertiary-container: #FFD8E4;
+  --md-sys-color-tertiary: #A5D6A7;
+  --md-sys-color-on-tertiary: #003314;
+  --md-sys-color-tertiary-container: #005026;
+  --md-sys-color-on-tertiary-container: #C8E6C9;
 
-  --md-sys-color-error: #F2B8B5;
-  --md-sys-color-on-error: #601410;
+  --md-sys-color-error: #FF5252;
+  --md-sys-color-on-error: #4A0000;
   --md-sys-color-error-container: #8C1D18;
-  --md-sys-color-on-error-container: #F9DEDC;
+  --md-sys-color-on-error-container: #FFDAD6;
 
-  --md-sys-color-background: #141218;
-  --md-sys-color-on-background: #E6E0E9;
+  --md-sys-color-background: #000000;
+  --md-sys-color-on-background: #E3E3E3;
   
-  --md-sys-color-surface: #141218;
-  --md-sys-color-on-surface: #E6E0E9;
-  --md-sys-color-surface-variant: #49454F;
-  --md-sys-color-on-surface-variant: #CAC4D0;
+  --md-sys-color-surface: #0A0A0A;
+  --md-sys-color-on-surface: #E3E3E3;
+  --md-sys-color-surface-variant: #444746;
+  --md-sys-color-on-surface-variant: #C4C7C5;
 
   /* Surface Container Hierarchy (M3) */
-  --md-sys-color-surface-container-lowest: #0C0B0F;
-  --md-sys-color-surface-container-low: #1D1B20;
-  --md-sys-color-surface-container: #211F26;
-  --md-sys-color-surface-container-high: #2B2930;
-  --md-sys-color-surface-container-highest: #36343B;
+  --md-sys-color-surface-container-lowest: #000000;
+  --md-sys-color-surface-container-low: #0A0A0A;
+  --md-sys-color-surface-container: #111111;
+  --md-sys-color-surface-container-high: #1A1A1A;
+  --md-sys-color-surface-container-highest: #222222;
 
-  --md-sys-color-outline: #938F99;
-  --md-sys-color-outline-variant: #49454F;
+  --md-sys-color-outline: #8E918F;
+  --md-sys-color-outline-variant: #444746;
   --md-sys-color-scrim: #000000;
   --md-sys-color-shadow: #000000;
 
@@ -85,6 +85,24 @@ body {
   line-height: 1.5;
   min-height: 100vh;
   overflow-x: hidden;
+  overscroll-behavior-y: none;
+  -webkit-user-select: none;
+  user-select: none;
+}
+
+input, textarea, select {
+  -webkit-user-select: auto;
+  user-select: auto;
+}
+
+/* Hide scrollbar for native app feel */
+::-webkit-scrollbar {
+  width: 0px;
+  background: transparent;
+}
+* {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
 }
 
 h1,
@@ -156,8 +174,8 @@ h6 {
 }
 
 .btn-primary:hover {
-  background-color: #E8DEF8; /* Lighter primary hover */
-  box-shadow: var(--shadow-sm);
+  background-color: #66FFA6; /* Lighter primary hover */
+  box-shadow: 0 0 16px rgba(0, 230, 118, 0.4);
 }
 
 .btn-outline {
@@ -167,8 +185,9 @@ h6 {
 }
 
 .btn-outline:hover {
-  background-color: rgba(208, 188, 255, 0.08);
+  background-color: rgba(0, 230, 118, 0.08);
   border-color: var(--primary);
+  box-shadow: inset 0 0 8px rgba(0, 230, 118, 0.1);
 }
 
 .btn-danger {
@@ -501,7 +520,7 @@ hr {
 }
 
 .nav-links a:hover {
-  background-color: rgba(230, 224, 233, 0.08);
+  background-color: rgba(0, 230, 118, 0.08);
 }
 
 .nav-links a.active {

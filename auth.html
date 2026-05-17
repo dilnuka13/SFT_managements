@@ -3,7 +3,10 @@
 
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
     <title>SFT Admin - Login</title>
     <!-- Material Google Fonts & Icons (Upgraded to Material Symbols Rounded MD3) -->
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
@@ -14,25 +17,25 @@
     <!-- MD3 Dark Mode Embedded Styles -->
     <style>
         :root {
-            /* Material 3 Dark Theme Baseline Tokens (Synchronized) */
-            --md-sys-color-primary: #D0BCFF;
-            --md-sys-color-on-primary: #381E72;
-            --md-sys-color-primary-container: #4F378B;
-            --md-sys-color-on-primary-container: #EADDFF;
+            /* Material 3 Dark Theme Baseline Tokens (Black & Green) */
+            --md-sys-color-primary: #00E676;
+            --md-sys-color-on-primary: #000000;
+            --md-sys-color-primary-container: #005026;
+            --md-sys-color-on-primary-container: #66FFA6;
             
-            --md-sys-color-secondary: #CCC2DC;
-            --md-sys-color-secondary-container: #4A4458;
+            --md-sys-color-secondary: #81C784;
+            --md-sys-color-secondary-container: #004D20;
 
-            --md-sys-color-error: #F2B8B5;
+            --md-sys-color-error: #FF5252;
             --md-sys-color-error-container: #8C1D18;
-            --md-sys-color-on-error-container: #F9DEDC;
+            --md-sys-color-on-error-container: #FFDAD6;
 
-            --md-sys-color-background: #141218;
-            --md-sys-color-on-background: #E6E0E9;
-            --md-sys-color-surface: #141218;
-            --md-sys-color-surface-container: #211F26;
-            --md-sys-color-surface-container-high: #2B2930;
-            --md-sys-color-surface-container-highest: #36343B;
+            --md-sys-color-background: #000000;
+            --md-sys-color-on-background: #E3E3E3;
+            --md-sys-color-surface: #0A0A0A;
+            --md-sys-color-surface-container: #111111;
+            --md-sys-color-surface-container-high: #1A1A1A;
+            --md-sys-color-surface-container-highest: #222222;
 
             --md-sys-color-outline: #938F99;
             --md-sys-color-outline-variant: #49454F;
@@ -56,18 +59,53 @@
             padding: 20px;
         }
 
-        .card {
-            background-color: var(--md-sys-color-surface-container);
+        .auth-wrapper {
+            display: flex;
+            width: 100%;
+            max-width: 900px;
+            min-height: 500px;
+            background: rgba(30, 30, 35, 0.45);
+            backdrop-filter: blur(24px);
+            -webkit-backdrop-filter: blur(24px);
             border-radius: var(--md-sys-shape-corner-extra-large);
-            box-shadow: var(--shadow-lg);
-            border: 1px solid var(--md-sys-color-outline-variant);
+            box-shadow: var(--shadow-lg), inset 0 0 0 1px rgba(255, 255, 255, 0.1);
+            overflow: hidden;
+            animation: formFadeIn 0.5s cubic-bezier(0.1, 0.7, 0.1, 1) forwards;
+            flex-direction: column;
+            padding-top: env(safe-area-inset-top, 20px);
+            padding-bottom: env(safe-area-inset-bottom, 20px);
         }
 
-        .auth-container {
-            width: 100%;
-            max-width: 420px;
+        .auth-left {
+            flex: 1;
             padding: 40px 32px;
-            animation: formFadeIn 0.5s cubic-bezier(0.1, 0.7, 0.1, 1) forwards;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .auth-right {
+            flex: 1;
+            background: rgba(0, 230, 118, 0.05);
+            border-left: 1px solid rgba(255, 255, 255, 0.05);
+            padding: 40px 32px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+        }
+
+        @media (min-width: 768px) {
+            .auth-wrapper {
+                flex-direction: row;
+                padding: 0;
+            }
+        }
+
+        @media (max-width: 767px) {
+            body.auth-page { padding: 16px; align-items: flex-start; }
+            .auth-right { border-left: none; border-top: 1px solid rgba(255, 255, 255, 0.05); }
         }
 
         @keyframes formFadeIn {
@@ -134,10 +172,9 @@
         .input-with-icon input {
             width: 100%;
             padding: 16px 16px 16px 48px;
-            background-color: var(--md-sys-color-surface-container-highest);
-            border: none;
-            border-bottom: 2px solid var(--md-sys-color-outline);
-            border-radius: 12px 12px 0 0;
+            background-color: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
             color: var(--md-sys-color-on-background);
             font-size: 16px;
             font-family: inherit;
@@ -147,8 +184,9 @@
 
         .input-with-icon input:focus {
             outline: none;
-            border-bottom-color: var(--md-sys-color-primary);
-            background-color: var(--md-sys-color-surface-container-high);
+            border-color: var(--md-sys-color-primary);
+            background-color: rgba(255, 255, 255, 0.08);
+            box-shadow: 0 0 0 4px rgba(0, 230, 118, 0.1);
         }
 
         .input-with-icon input:focus + i {
@@ -179,8 +217,8 @@
         }
 
         .btn-primary:hover {
-            background-color: #E8DEF8;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+            background-color: #66FFA6;
+            box-shadow: 0 0 16px rgba(0, 230, 118, 0.4);
         }
 
         .btn-outline {
@@ -190,8 +228,9 @@
         }
 
         .btn-outline:hover {
-            background-color: rgba(208, 188, 255, 0.08);
+            background-color: rgba(0, 230, 118, 0.08);
             border-color: var(--md-sys-color-primary);
+            box-shadow: inset 0 0 8px rgba(0, 230, 118, 0.1);
         }
 
         .divider {
@@ -221,7 +260,7 @@
         }
 
         .text-link:hover {
-            color: #E8DEF8;
+            color: #66FFA6;
             text-decoration: underline;
         }
 
@@ -279,92 +318,106 @@
     <!-- Toast Container -->
     <div id="toast-container"></div>
 
-    <div class="auth-container card">
-        <div class="auth-header">
-            <img src="logo.png" alt="SFT Logo" class="auth-logo" onerror="this.src='https://ui-avatars.com/api/?name=SFT&background=random&size=128'">
-            <h2>Welcome Back</h2>
-            <p>Malaka Sir's SFT Class Dashboard</p>
+    <div class="auth-wrapper">
+        <!-- Left Side: Login Form -->
+        <div class="auth-left">
+            <div class="auth-header">
+                <img src="logo.png" alt="SFT Logo" class="auth-logo" onerror="this.src='https://ui-avatars.com/api/?name=SFT&background=random&size=128'">
+                <h2>Welcome Back</h2>
+                <p>Malaka Sir's SFT Class Dashboard</p>
+            </div>
+
+            <!-- Login Form -->
+            <form id="login-form" class="auth-form active">
+                <div class="form-group">
+                    <label for="login-email">Email</label>
+                    <div class="input-with-icon">
+                        <i class="material-symbols-rounded">email</i>
+                        <input type="email" id="login-email" required placeholder=" ">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="login-password">Password</label>
+                    <div class="input-with-icon">
+                        <i class="material-symbols-rounded">lock</i>
+                        <input type="password" id="login-password" required placeholder=" ">
+                    </div>
+                </div>
+                <div class="form-options">
+                    <a href="#" class="text-link" id="show-forgot-btn">Forgot Password?</a>
+                </div>
+                <button type="submit" class="btn btn-primary btn-block">Log In</button>
+
+                <div class="divider">
+                    <span>OR</span>
+                </div>
+
+                <button type="button" id="google-login-btn" class="btn btn-outline btn-block">
+                    <img src="https://fonts.gstatic.com/s/i/productlogos/googleg/v6/24px.svg" alt="Google" style="width: 20px; height: 20px;">
+                    Continue with Google
+                </button>
+
+                <div class="auth-footer mt-3">
+                    <p>Don't have an account? <a href="#" class="text-link" id="show-signup-btn">Sign Up</a></p>
+                </div>
+            </form>
+
+            <!-- Signup Form -->
+            <form id="signup-form" class="auth-form d-none">
+                <div class="form-group">
+                    <label for="signup-name">Display Name</label>
+                    <div class="input-with-icon">
+                        <i class="material-symbols-rounded">person</i>
+                        <input type="text" id="signup-name" required placeholder=" ">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="signup-email">Email</label>
+                    <div class="input-with-icon">
+                        <i class="material-symbols-rounded">email</i>
+                        <input type="email" id="signup-email" required placeholder=" ">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="signup-password">Password</label>
+                    <div class="input-with-icon">
+                        <i class="material-symbols-rounded">lock</i>
+                        <input type="password" id="signup-password" minlength="6" required placeholder=" ">
+                    </div>
+                </div>
+                <button type="submit" class="btn btn-primary btn-block">Create Account</button>
+                <div class="auth-footer mt-3">
+                    <p>Already have an account? <a href="#" class="text-link" id="show-login-btn">Log In</a></p>
+                </div>
+            </form>
+
+            <!-- Forgot Password Form -->
+            <form id="forgot-form" class="auth-form d-none">
+                <p style="color: var(--md-sys-color-outline); font-size: 14px; margin-bottom: 24px; text-align: center;">Enter your email address and we'll send you a link to reset your password.</p>
+                <div class="form-group">
+                    <label for="forgot-email">Email</label>
+                    <div class="input-with-icon">
+                        <i class="material-symbols-rounded">email</i>
+                        <input type="email" id="forgot-email" required placeholder=" ">
+                    </div>
+                </div>
+                <button type="submit" class="btn btn-primary btn-block">Send Reset Link</button>
+                <div class="auth-footer mt-3">
+                    <p><a href="#" class="text-link" id="back-to-login-btn">Back to Log In</a></p>
+                </div>
+            </form>
         </div>
 
-        <!-- Login Form -->
-        <form id="login-form" class="auth-form active">
-            <div class="form-group">
-                <label for="login-email">Email</label>
-                <div class="input-with-icon">
-                    <i class="material-symbols-rounded">email</i>
-                    <input type="email" id="login-email" required placeholder=" ">
-                </div>
-            </div>
-            <div class="form-group">
-                <label for="login-password">Password</label>
-                <div class="input-with-icon">
-                    <i class="material-symbols-rounded">lock</i>
-                    <input type="password" id="login-password" required placeholder=" ">
-                </div>
-            </div>
-            <div class="form-options">
-                <a href="#" class="text-link" id="show-forgot-btn">Forgot Password?</a>
-            </div>
-            <button type="submit" class="btn btn-primary btn-block">Log In</button>
-
-            <div class="divider">
-                <span>OR</span>
-            </div>
-
-            <button type="button" id="google-login-btn" class="btn btn-outline btn-block">
-                <img src="https://fonts.gstatic.com/s/i/productlogos/googleg/v6/24px.svg" alt="Google" style="width: 20px; height: 20px;">
-                Continue with Google
-            </button>
-
-            <div class="auth-footer mt-3">
-                <p>Don't have an account? <a href="#" class="text-link" id="show-signup-btn">Sign Up</a></p>
-            </div>
-        </form>
-
-        <!-- Signup Form -->
-        <form id="signup-form" class="auth-form d-none">
-            <div class="form-group">
-                <label for="signup-name">Display Name</label>
-                <div class="input-with-icon">
-                    <i class="material-symbols-rounded">person</i>
-                    <input type="text" id="signup-name" required placeholder=" ">
-                </div>
-            </div>
-            <div class="form-group">
-                <label for="signup-email">Email</label>
-                <div class="input-with-icon">
-                    <i class="material-symbols-rounded">email</i>
-                    <input type="email" id="signup-email" required placeholder=" ">
-                </div>
-            </div>
-            <div class="form-group">
-                <label for="signup-password">Password</label>
-                <div class="input-with-icon">
-                    <i class="material-symbols-rounded">lock</i>
-                    <input type="password" id="signup-password" minlength="6" required placeholder=" ">
-                </div>
-            </div>
-            <button type="submit" class="btn btn-primary btn-block">Create Account</button>
-            <div class="auth-footer mt-3">
-                <p>Already have an account? <a href="#" class="text-link" id="show-login-btn">Log In</a></p>
-            </div>
-        </form>
-
-        <!-- Forgot Password Form -->
-        <form id="forgot-form" class="auth-form d-none">
-            <p style="color: var(--md-sys-color-outline); font-size: 14px; margin-bottom: 24px; text-align: center;">Enter your email address and we'll send you a link to reset your password.</p>
-            <div class="form-group">
-                <label for="forgot-email">Email</label>
-                <div class="input-with-icon">
-                    <i class="material-symbols-rounded">email</i>
-                    <input type="email" id="forgot-email" required placeholder=" ">
-                </div>
-            </div>
-            <button type="submit" class="btn btn-primary btn-block">Send Reset Link</button>
-            <div class="auth-footer mt-3">
-                <p><a href="#" class="text-link" id="back-to-login-btn">Back to Log In</a></p>
-            </div>
-        </form>
+        <!-- Right Side: Public Access -->
+        <div class="auth-right">
+            <i class="material-symbols-rounded" style="font-size: 64px; color: var(--md-sys-color-primary); margin-bottom: 16px;">history_edu</i>
+            <h2 style="margin: 0 0 12px 0; font-size: 22px;">Exam Papers Tracker</h2>
+            <p style="color: var(--md-sys-color-outline); font-size: 14px; margin-bottom: 32px; max-width: 250px;">Access the public paper tracking dashboard to enter or view exam details without logging in.</p>
+            
+            <a href="exam-papers.html" class="btn btn-primary" style="text-decoration: none; padding: 16px 32px; border-radius: 100px; font-size: 16px; width: 100%; max-width: 250px;">
+                <i class="material-symbols-rounded">arrow_forward</i> Go to Tracker
+            </a>
+        </div>
     </div>
 </body>
 
