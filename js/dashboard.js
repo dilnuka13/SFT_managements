@@ -66,7 +66,7 @@ document.addEventListener('DOMContentLoaded', () => {
     let rawPanelData = [];
 
     // --- Fetch and Process Data ---
-    window.loadDashboardData = async () => {
+    window.loadDashboardData = async (showNotification = true) => {
         const { data: { user } } = await supabase.auth.getUser();
         if (!user) return;
 
@@ -108,7 +108,9 @@ document.addEventListener('DOMContentLoaded', () => {
             processInstructorData(rawInstructorData);
             processPanelData(rawPanelData);
 
-            window.showToast('Dashboard data updated.', 'success');
+            if (showNotification) {
+                window.showToast('Dashboard data loaded.', 'success');
+            }
         } catch (error) {
             console.error(error);
             window.showToast('Failed to load dashboard data: ' + error.message, 'error');
@@ -303,7 +305,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // --- Action Listeners ---
     document.getElementById('apply-filter-btn').addEventListener('click', window.loadDashboardData);
-    window.loadDashboardData();
+    window.loadDashboardData(false);
     loadHistoricalData();
 
     // --- EXPORTS & PDF MODAL ---

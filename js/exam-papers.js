@@ -458,7 +458,10 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     // ─── Toast ────────────────────────────────────────────────
     function showToast(message, type = 'success') {
+        // User request: Only show error toasts, suppress success/info
+        if (type !== 'error') return;
         const container = document.getElementById('toast-container');
+        if (!container) return;
         const toast = document.createElement('div');
         toast.className = `toast ${type}`;
         const icon = type === 'success' ? 'check_circle' : 'error';

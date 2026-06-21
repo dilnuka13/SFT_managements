@@ -12,6 +12,8 @@ document.addEventListener('DOMContentLoaded', () => {
     };
 
     const showToast = (message, type = 'default') => {
+        // User request: Only show error toasts, suppress success/info
+        if (type !== 'error') return;
         const container = document.getElementById('toast-container');
         if (!container) return;
         const toast = document.createElement('div');

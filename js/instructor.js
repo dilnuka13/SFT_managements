@@ -10,6 +10,168 @@ document.addEventListener('DOMContentLoaded', () => {
 
     let classCount = 1;
 
+    let recentSundaySession = null;
+    let recentWednesdaySession = null;
+    let sessionsFetched = false;
+
+    const getDayOfWeek = (dateStr) => {
+        const parts = dateStr.split('-');
+        if (parts.length !== 3) return null;
+        const year = parseInt(parts[0], 10);
+        const month = parseInt(parts[1], 10) - 1;
+        const day = parseInt(parts[2], 10);
+        const date = new Date(year, month, day);
+        return date.getDay(); // 0 = Sunday, 3 = Wednesday
+    };
+
+    const fetchRecentSessions = async () => {
+        try {
+            const { data: { session } } = await supabase.auth.getSession();
+            if (!session) return;
+            const user = session.user;
+
+            const { data, error } = await supabase
+                .from('instructor_sessions')
+                .select('id, date, start_time, end_time')
+                .eq('user_id', user.id)
+                .order('date', { ascending: false });
+
+            if (error) {
+                console.error('Error fetching recent sessions:', error);
+                return;
+            }
+
+            if (data && data.length > 0) {
+                recentSundaySession = data.find(s => getDayOfWeek(s.date) === 0);
+                recentWednesdaySession = data.find(s => getDayOfWeek(s.date) === 3);
+            }
+            sessionsFetched = true;
+        } catch (err) {
+            console.error('Error fetching recent sessions:', err);
+        }
+    };
+
+    const autoFillSchedule = async (dateStr) => {
+        const day = getDayOfWeek(dateStr);
+        if (day !== 0 && day !== 3) return; // Only Sun (0) and Wed (3)
+
+        window.showLoading(true);
+
+        try {
+            if (!sessionsFetched) {
+                await fetchRecentSessions();
+            }
+
+            // Reset classes container to just 1 class first
+            const classCards = document.querySelectorAll('.class-entry-card');
+            classCards.forEach((c, idx) => {
+                if (idx > 0) c.remove();
+            });
+            classCount = 1;
+            addClassBtn.classList.remove('d-none');
+
+            // Clear the fields on Class 1
+            const card1 = document.getElementById('class-entry-1');
+            const batchSelect1 = card1.querySelector('.inst-batch');
+            const typeSelect1 = card1.querySelector('.inst-class-type');
+            batchSelect1.value = '';
+            batchSelect1.dispatchEvent(new Event('change'));
+            typeSelect1.value = '';
+            typeSelect1.dispatchEvent(new Event('change'));
+
+            if (day === 0) { // Sunday
+                // Start/End Time
+                let startTime = '08:00';
+                let endTime = '18:15';
+                if (recentSundaySession) {
+                    startTime = recentSundaySession.start_time.substring(0, 5);
+                    endTime = recentSundaySession.end_time.substring(0, 5);
+                }
+                document.getElementById('inst-start-time').value = startTime;
+                document.getElementById('inst-end-time').value = endTime;
+
+                // Class 1: 2026 Paper class, Black Paper
+                batchSelect1.value = '2026';
+                batchSelect1.dispatchEvent(new Event('change'));
+                typeSelect1.value = 'Paper class';
+                typeSelect1.dispatchEvent(new Event('change'));
+
+                const paperTypeSelect = card1.querySelector('.inst-paper-type');
+                paperTypeSelect.value = 'black';
+                paperTypeSelect.dispatchEvent(new Event('change'));
+
+                // Fetch next paper number
+                const { data: nextNum, error } = await supabase.rpc('get_next_instructor_paper_number', {
+                    p_batch: '2026',
+                    p_paper_type: 'black'
+                });
+                if (!error && nextNum !== null) {
+                    card1.querySelector('.inst-paper-number').value = nextNum;
+                }
+
+                // Add Class 2: 2027 Theory
+                addClassBtn.click();
+                const card2 = document.getElementById('class-entry-2');
+                if (card2) {
+                    const batch2 = card2.querySelector('.inst-batch');
+                    const type2 = card2.querySelector('.inst-class-type');
+                    batch2.value = '2027';
+                    batch2.dispatchEvent(new Event('change'));
+                    type2.value = 'Theory';
+                    type2.dispatchEvent(new Event('change'));
+                }
+
+                // Add Class 3: 2028 Theory
+                addClassBtn.click();
+                const card3 = document.getElementById('class-entry-3');
+                if (card3) {
+                    const batch3 = card3.querySelector('.inst-batch');
+                    const type3 = card3.querySelector('.inst-class-type');
+                    batch3.value = '2028';
+                    batch3.dispatchEvent(new Event('change'));
+                    type3.value = 'Theory';
+                    type3.dispatchEvent(new Event('change'));
+                }
+
+            } else if (day === 3) { // Wednesday
+                // Start/End Time
+                let startTime = '07:45';
+                let endTime = '17:00';
+                if (recentWednesdaySession) {
+                    startTime = recentWednesdaySession.start_time.substring(0, 5);
+                    endTime = recentWednesdaySession.end_time.substring(0, 5);
+                }
+                document.getElementById('inst-start-time').value = startTime;
+                document.getElementById('inst-end-time').value = endTime;
+
+                // Class 1: 2026 Revision
+                batchSelect1.value = '2026';
+                batchSelect1.dispatchEvent(new Event('change'));
+                typeSelect1.value = 'Revision';
+                typeSelect1.dispatchEvent(new Event('change'));
+
+                // Add Class 2: 2026 Theory
+                addClassBtn.click();
+                const card2 = document.getElementById('class-entry-2');
+                if (card2) {
+                    const batch2 = card2.querySelector('.inst-batch');
+                    const type2 = card2.querySelector('.inst-class-type');
+                    batch2.value = '2026';
+                    batch2.dispatchEvent(new Event('change'));
+                    type2.value = 'Theory';
+                    type2.dispatchEvent(new Event('change'));
+                }
+            }
+
+            window.showToast('Schedule auto-filled successfully!', 'success');
+        } catch (err) {
+            console.error('Error auto-filling schedule:', err);
+            window.showToast('Error auto-filling schedule: ' + err.message, 'error');
+        } finally {
+            window.showLoading(false);
+        }
+    };
+
     // --- Time validation (15 min intervals) ---
     const validateTimeInput = (e) => {
         const val = e.target.value; // HH:mm format
@@ -31,10 +193,68 @@ document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('inst-start-time').addEventListener('change', validateTimeInput);
     document.getElementById('inst-end-time').addEventListener('change', validateTimeInput);
 
-    // Default date to today
-    document.getElementById('inst-date').valueAsDate = new Date();
+    // Default date to today and auto-fill check
+    const dateInput = document.getElementById('inst-date');
+    dateInput.valueAsDate = new Date();
+
+    // Auto-fill on load if it's Sunday or Wednesday
+    if (dateInput.value) {
+        autoFillSchedule(dateInput.value);
+    }
+
+    // Listen to changes on date
+    dateInput.addEventListener('change', () => {
+        if (dateInput.value) {
+            autoFillSchedule(dateInput.value);
+        }
+    });
 
     // --- Dynamic Class Forms Logic ---
+    const updateCardTitle = (card) => {
+        const batchSelect = card.querySelector('.inst-batch');
+        const batchOther = card.querySelector('.inst-batch-other');
+        const typeSelect = card.querySelector('.inst-class-type');
+        const typeOther = card.querySelector('.inst-type-other');
+        const h3 = card.querySelector('h3');
+
+        if (!h3) return;
+
+        let previewDiv = card.querySelector('.class-preview-info');
+        if (!previewDiv) {
+            previewDiv = document.createElement('div');
+            previewDiv.className = 'class-preview-info';
+            previewDiv.style = 'margin-top: 8px; margin-bottom: 16px; display: flex; flex-direction: column; gap: 8px; font-size: 13px;';
+            h3.parentNode.insertBefore(previewDiv, h3.nextSibling);
+        }
+
+        const classIdx = card.id === 'class-entry-1' ? 1 : parseInt(card.id.split('-').pop(), 10);
+        const isMandatory = classIdx === 1;
+
+        const batchVal = batchSelect.value === 'Other' ? batchOther.value.trim() : batchSelect.value;
+        const typeVal = typeSelect.value === 'Other Class' ? typeOther.value.trim() : typeSelect.value;
+
+        h3.textContent = `Class ${classIdx} ${isMandatory ? '(Mandatory)' : '(Optional)'}`;
+
+        let previewHTML = '';
+        if (batchVal) {
+            previewHTML += `
+                <div style="display: flex; align-items: center; gap: 8px;">
+                    <span style="color: var(--text-secondary); display: flex; align-items: center; gap: 4px; width: 95px;"><i class="material-symbols-rounded" style="font-size: 16px;">groups</i> Batch:</span>
+                    <span style="background: rgba(255,255,255,0.06); color: var(--text-main); padding: 3px 10px; border-radius: 6px; border: 1px solid var(--border-light); font-size: 12px; font-weight: 500;">${batchVal}</span>
+                </div>
+            `;
+        }
+        if (typeVal) {
+            previewHTML += `
+                <div style="display: flex; align-items: center; gap: 8px;">
+                    <span style="color: var(--text-secondary); display: flex; align-items: center; gap: 4px; width: 95px;"><i class="material-symbols-rounded" style="font-size: 16px;">category</i> Type:</span>
+                    <span style="background: var(--primary-dim); color: var(--primary); padding: 3px 10px; border-radius: 6px; border: 1px solid var(--border-primary); font-size: 12px; font-weight: 600; text-shadow: 0 0 10px var(--primary-glow);">${typeVal}</span>
+                </div>
+            `;
+        }
+        previewDiv.innerHTML = previewHTML;
+    };
+
     const attachClassListeners = (classCard) => {
         const batchSelect = classCard.querySelector('.inst-batch');
         const batchOther = classCard.querySelector('.inst-batch-other');
@@ -46,14 +266,22 @@ document.addEventListener('DOMContentLoaded', () => {
         const fetchNextBtn = classCard.querySelector('.fetch-next-btn');
         const paperNumberInput = classCard.querySelector('.inst-paper-number');
 
+        // Initial title update
+        updateCardTitle(classCard);
+
         // Toggle "Other" inputs
         batchSelect.addEventListener('change', () => {
-            batchOther.classList.toggle('d-none', batchSelect.value !== 'Other');
+            batchOther.parentElement.classList.toggle('d-none', batchSelect.value !== 'Other');
             if (batchSelect.value !== 'Other') batchOther.value = '';
+            updateCardTitle(classCard);
+        });
+
+        batchOther.addEventListener('input', () => {
+            updateCardTitle(classCard);
         });
 
         typeSelect.addEventListener('change', () => {
-            typeOther.classList.toggle('d-none', typeSelect.value !== 'Other Class');
+            typeOther.parentElement.classList.toggle('d-none', typeSelect.value !== 'Other Class');
             if (typeSelect.value !== 'Other Class') typeOther.value = '';
 
             // Show paper details if 'Paper class'
@@ -68,13 +296,18 @@ document.addEventListener('DOMContentLoaded', () => {
                 paperNumberInput.removeAttribute('required');
                 paperTypeSelect.value = '';
                 paperTypeOther.value = '';
-                paperTypeOther.classList.add('d-none');
+                paperTypeOther.parentElement.classList.add('d-none');
                 paperNumberInput.value = '';
             }
+            updateCardTitle(classCard);
+        });
+
+        typeOther.addEventListener('input', () => {
+            updateCardTitle(classCard);
         });
 
         paperTypeSelect.addEventListener('change', () => {
-            paperTypeOther.classList.toggle('d-none', paperTypeSelect.value !== 'other');
+            paperTypeOther.parentElement.classList.toggle('d-none', paperTypeSelect.value !== 'other');
             if (paperTypeSelect.value !== 'other') paperTypeOther.value = '';
         });
 
@@ -109,7 +342,7 @@ document.addEventListener('DOMContentLoaded', () => {
             removeBtn.addEventListener('click', () => {
                 classCard.remove();
                 classCount--;
-                addClassBtn.classList.remove('d-none'); // Re-enable if below 3
+                addClassBtn.classList.remove('d-none'); // Re-enable if below 5
             });
         }
     };
@@ -118,8 +351,8 @@ document.addEventListener('DOMContentLoaded', () => {
     attachClassListeners(document.getElementById('class-entry-1'));
 
     addClassBtn.addEventListener('click', () => {
-        if (classCount >= 3) {
-            window.showToast('Maximum 3 classes allowed per session.', 'error');
+        if (classCount >= 5) {
+            window.showToast('Maximum 5 classes allowed per session.', 'error');
             return;
         }
 
@@ -182,7 +415,7 @@ document.addEventListener('DOMContentLoaded', () => {
         classesContainer.insertAdjacentHTML('beforeend', cardHTML);
         attachClassListeners(document.getElementById(newClassId));
 
-        if (classCount >= 3) {
+        if (classCount >= 5) {
             addClassBtn.classList.add('d-none');
         }
     });

@@ -136,9 +136,9 @@ document.addEventListener('DOMContentLoaded', async () => {
 
         navLinks.forEach(link => {
             link.addEventListener('click', (e) => {
-                e.preventDefault();
                 const targetId = link.getAttribute('data-target');
                 if (targetId) {
+                    e.preventDefault();
                     switchSection(targetId);
                     // Close sidebar on mobile
                     if (window.innerWidth <= 900) {
@@ -504,6 +504,8 @@ window.showLoading = (show) => {
 };
 
 window.showToast = (message, type = 'default') => {
+    // User request: Only show error toasts, suppress success/info
+    if (type !== 'error') return;
     const container = document.getElementById('toast-container');
     if (!container) return;
     const toast = document.createElement('div');

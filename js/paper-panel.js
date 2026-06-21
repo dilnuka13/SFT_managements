@@ -18,12 +18,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Toggles
     batchSelect.addEventListener('change', () => {
-        batchOther.classList.toggle('d-none', batchSelect.value !== 'Other');
+        batchOther.parentElement.classList.toggle('d-none', batchSelect.value !== 'Other');
         if (batchSelect.value !== 'Other') batchOther.value = '';
     });
 
     typeSelect.addEventListener('change', () => {
-        typeOther.classList.toggle('d-none', typeSelect.value !== 'other');
+        typeOther.parentElement.classList.toggle('d-none', typeSelect.value !== 'other');
         if (typeSelect.value !== 'other') typeOther.value = '';
     });
 

@@ -14,71 +14,30 @@
     <link rel="stylesheet" href="css/style.css">
     <link rel="icon" type="image/png" href="logo.png">
 
-    <!-- MD3 Dark Mode Embedded Styles (Overridden with new liquid grid UI) -->
-    <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <!-- Glassmorphism Auth Specific Styles -->
     <style>
-        :root {
-            --bg: #030303;
-            --surface: #0d0d0d;
-            --surface-2: #151515;
-            --surface-3: #1e1e1e;
-            --primary: #00E676;
-            --primary-dim: rgba(0, 230, 118, 0.12);
-            --primary-glow: rgba(0, 230, 118, 0.35);
-            --on-primary: #000;
-            --text: #f0f0f0;
-            --text-dim: #888;
-            --text-muted: #444;
-            --border: rgba(255,255,255,0.07);
-            --border-lit: rgba(0,230,118,0.3);
-            --error: #FF5252;
-            --radius-sm: 8px;
-            --radius-md: 14px;
-            --radius-lg: 20px;
-            --radius-xl: 28px;
-        }
-
-        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
         body.auth-page {
-            background: var(--bg);
-            color: var(--text);
-            font-family: 'DM Sans', sans-serif;
             display: flex;
             justify-content: center;
             align-items: center;
             min-height: 100vh;
-            margin: 0;
-            padding: 20px;
-            position: relative;
-        }
-
-        body.auth-page::before {
-            content: '';
-            position: fixed;
-            inset: 0;
-            background-image:
-                linear-gradient(rgba(0,230,118,0.025) 1px, transparent 1px),
-                linear-gradient(90deg, rgba(0,230,118,0.025) 1px, transparent 1px);
-            background-size: 48px 48px;
-            pointer-events: none;
-            z-index: 0;
+            padding: 24px;
         }
 
         .auth-wrapper {
-            position: relative;
-            z-index: 1;
             display: flex;
+            flex-direction: column;
             width: 100%;
             max-width: 900px;
-            min-height: 500px;
-            background: var(--surface);
-            border: 1px solid var(--border);
-            border-radius: var(--radius-xl);
+            min-height: 550px;
+            background: var(--surface-glass);
+            backdrop-filter: blur(24px);
+            -webkit-backdrop-filter: blur(24px);
+            border: 1px solid var(--border-light);
+            border-radius: var(--radius-lg);
             overflow: hidden;
-            animation: popIn 0.4s cubic-bezier(0.2, 0, 0, 1) forwards;
-            flex-direction: column;
             box-shadow: 0 24px 64px rgba(0,0,0,0.6);
+            animation: popIn 0.5s cubic-bezier(0.2, 0, 0, 1) forwards;
         }
 
         .auth-left {
@@ -87,33 +46,40 @@
             display: flex;
             flex-direction: column;
             justify-content: center;
+            z-index: 2;
         }
 
         .auth-right {
             flex: 1;
-            background: rgba(0, 230, 118, 0.02);
-            border-left: 1px solid var(--border);
+            background: rgba(0, 230, 118, 0.03);
+            border-top: 1px solid var(--border-light);
             padding: 40px 32px;
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
             text-align: center;
+            position: relative;
+        }
+
+        .auth-right::before {
+            content: '';
+            position: absolute;
+            width: 300px;
+            height: 300px;
+            background: var(--primary);
+            filter: blur(150px);
+            opacity: 0.15;
+            border-radius: 50%;
+            z-index: -1;
+            animation: glassPulse 4s infinite alternate;
         }
 
         @media (min-width: 768px) {
             .auth-wrapper { flex-direction: row; }
+            .auth-right { border-top: none; border-left: 1px solid var(--border-light); }
         }
 
-        @media (max-width: 767px) {
-            body.auth-page { padding: 16px; align-items: flex-start; }
-            .auth-right { border-left: none; border-top: 1px solid var(--border); }
-        }
-
-        @keyframes popIn {
-            from { opacity: 0; transform: scale(0.95) translateY(10px); }
-            to { opacity: 1; transform: scale(1) translateY(0); }
-        }
         @keyframes formFadeIn {
             from { opacity: 0; transform: translateY(10px); }
             to { opacity: 1; transform: translateY(0); }
@@ -122,81 +88,29 @@
         .auth-header { text-align: center; margin-bottom: 32px; }
         .auth-logo {
             width: 80px; height: 80px;
-            border-radius: var(--radius-lg);
+            border-radius: var(--radius-md);
             margin-bottom: 24px;
             object-fit: cover;
-            border: 1px solid var(--border-lit);
-            background: var(--surface-2);
-            padding: 8px;
+            border: 1px solid var(--border-primary);
+            background: rgba(0,0,0,0.4);
+            padding: 12px;
+            box-shadow: 0 0 30px var(--primary-dim);
+            animation: popIn 0.8s cubic-bezier(0.2, 0, 0, 1);
         }
-        .auth-header h2 { font-family: 'Space Mono', monospace; font-size: 20px; font-weight: 700; margin: 0 0 8px 0; color: var(--text); }
-        .auth-header p { color: var(--text-dim); margin: 0; font-size: 13px; }
-
-        .form-group { margin-bottom: 20px; position: relative; }
-        .form-group label { display: block; font-size: 11px; font-weight: 600; letter-spacing: 0.6px; text-transform: uppercase; color: var(--text-dim); margin-bottom: 8px; }
-
-        .input-with-icon { position: relative; display: flex; align-items: center; }
-        .input-with-icon i { position: absolute; left: 14px; color: var(--text-muted); font-size: 20px; transition: all 0.2s; }
-        .input-with-icon input {
-            width: 100%;
-            padding: 14px 14px 14px 44px;
-            background: var(--surface-2);
-            border: 1px solid var(--border);
-            border-radius: var(--radius-sm);
-            color: var(--text);
-            font-size: 15px;
-            font-family: 'DM Sans', sans-serif;
-            transition: all 0.2s;
-            box-sizing: border-box;
-        }
-        .input-with-icon input:focus {
-            outline: none;
-            border-color: var(--primary);
-            background: rgba(0,230,118,0.04);
-            box-shadow: 0 0 0 3px var(--primary-dim);
-        }
-        .input-with-icon input:focus + i { color: var(--primary); }
-
-        .btn {
-            width: 100%;
-            padding: 12px 24px;
-            border-radius: var(--radius-md);
-            font-size: 15px;
-            font-weight: 600;
-            border: none;
-            cursor: pointer;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
-            transition: all 0.2s;
-            font-family: 'DM Sans', sans-serif;
-            box-sizing: border-box;
-            height: 50px;
-        }
-        .btn-primary { background: var(--primary); color: var(--on-primary); }
-        .btn-primary:hover { background: #33ff8e; box-shadow: 0 0 24px var(--primary-glow); transform: translateY(-1px); }
-        .btn-primary:active { transform: translateY(0); }
-
-        .btn-outline { background: transparent; color: var(--text); border: 1px solid var(--border); }
-        .btn-outline:hover { background: var(--surface-3); border-color: var(--primary); color: var(--primary); }
+        .auth-header h2 { font-family: 'Outfit', sans-serif; font-size: 28px; font-weight: 700; margin: 0 0 8px 0; color: var(--text-main); }
+        .auth-header p { color: var(--text-secondary); margin: 0; font-size: 14px; }
 
         .divider { display: flex; align-items: center; text-align: center; margin: 24px 0; color: var(--text-muted); font-size: 11px; text-transform: uppercase; letter-spacing: 1px; }
-        .divider::before, .divider::after { content: ''; flex: 1; border-bottom: 1px solid var(--border); }
+        .divider::before, .divider::after { content: ''; flex: 1; border-bottom: 1px solid var(--border-light); }
         .divider span { padding: 0 16px; }
 
-        .text-link { color: var(--primary); text-decoration: none; font-weight: 500; transition: all 0.2s; }
+        .text-link { color: var(--primary); text-decoration: none; font-weight: 500; transition: var(--transition-fast); }
         .text-link:hover { color: #33ff8e; text-decoration: underline; }
 
         .form-options { display: flex; justify-content: flex-end; margin-top: -8px; margin-bottom: 24px; font-size: 13px; }
-        .auth-footer { text-align: center; font-size: 13px; color: var(--text-dim); }
+        .auth-footer { text-align: center; font-size: 14px; color: var(--text-secondary); }
 
-        .d-none { display: none !important; }
-        .active { display: block; animation: formFadeIn 0.3s ease forwards; }
-
-        #loading-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.85); backdrop-filter: blur(8px); z-index: 9999; display: flex; justify-content: center; align-items: center; }
-        .spinner { width: 48px; height: 48px; border: 3px solid var(--primary-dim); border-top: 3px solid var(--primary); border-radius: 50%; animation: spin 0.8s linear infinite; }
-        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        .active { display: block; animation: formFadeIn 0.4s ease forwards; }
     </style>
 
     <!-- Supabase Client Setup -->
@@ -208,7 +122,7 @@
 <body class="auth-page">
     <!-- Loading Overlay -->
     <div id="loading-overlay" class="d-none">
-        <div class="spinner"></div>
+        <div class="loader-pulse"></div>
     </div>
 
     <!-- Toast Container -->
@@ -224,7 +138,7 @@
             </div>
 
             <!-- Login Form -->
-            <form id="login-form" class="auth-form active">
+            <form id="login-form" class="auth-form active animate-stagger">
                 <div class="form-group">
                     <label for="login-email">Email</label>
                     <div class="input-with-icon">
@@ -253,13 +167,13 @@
                     Continue with Google
                 </button>
 
-                <div class="auth-footer mt-3">
+                <div class="auth-footer mt-4">
                     <p>Don't have an account? <a href="#" class="text-link" id="show-signup-btn">Sign Up</a></p>
                 </div>
             </form>
 
             <!-- Signup Form -->
-            <form id="signup-form" class="auth-form d-none">
+            <form id="signup-form" class="auth-form d-none animate-stagger">
                 <div class="form-group">
                     <label for="signup-name">Display Name</label>
                     <div class="input-with-icon">
@@ -282,14 +196,14 @@
                     </div>
                 </div>
                 <button type="submit" class="btn btn-primary btn-block">Create Account</button>
-                <div class="auth-footer mt-3">
+                <div class="auth-footer mt-4">
                     <p>Already have an account? <a href="#" class="text-link" id="show-login-btn">Log In</a></p>
                 </div>
             </form>
 
             <!-- Forgot Password Form -->
-            <form id="forgot-form" class="auth-form d-none">
-                <p style="color: var(--md-sys-color-outline); font-size: 14px; margin-bottom: 24px; text-align: center;">Enter your email address and we'll send you a link to reset your password.</p>
+            <form id="forgot-form" class="auth-form d-none animate-stagger">
+                <p style="color: var(--text-secondary); font-size: 14px; margin-bottom: 24px; text-align: center;">Enter your email address and we'll send you a link to reset your password.</p>
                 <div class="form-group">
                     <label for="forgot-email">Email</label>
                     <div class="input-with-icon">
@@ -298,7 +212,7 @@
                     </div>
                 </div>
                 <button type="submit" class="btn btn-primary btn-block">Send Reset Link</button>
-                <div class="auth-footer mt-3">
+                <div class="auth-footer mt-4">
                     <p><a href="#" class="text-link" id="back-to-login-btn">Back to Log In</a></p>
                 </div>
             </form>
@@ -306,11 +220,11 @@
 
         <!-- Right Side: Public Access -->
         <div class="auth-right">
-            <i class="material-symbols-rounded" style="font-size: 64px; color: var(--md-sys-color-primary); margin-bottom: 16px;">history_edu</i>
-            <h2 style="margin: 0 0 12px 0; font-size: 22px;">Exam Papers Tracker</h2>
-            <p style="color: var(--md-sys-color-outline); font-size: 14px; margin-bottom: 32px; max-width: 250px;">Access the public paper tracking dashboard to enter or view exam details without logging in.</p>
+            <i class="material-symbols-rounded" style="font-size: 64px; color: var(--primary); margin-bottom: 16px;">history_edu</i>
+            <h2 style="margin: 0 0 12px 0; font-size: 24px; font-family: 'Outfit', sans-serif;">Exam Papers Tracker</h2>
+            <p style="color: var(--text-secondary); font-size: 15px; margin-bottom: 32px; max-width: 250px;">Access the public paper tracking dashboard to enter or view exam details without logging in.</p>
             
-            <a href="exam-papers.html" class="btn btn-primary" style="text-decoration: none; padding: 16px 32px; border-radius: 100px; font-size: 16px; width: 100%; max-width: 250px;">
+            <a href="exam-papers.html" class="btn btn-outline" style="text-decoration: none; border-radius: var(--radius-full); width: 100%; max-width: 250px;">
                 <i class="material-symbols-rounded">arrow_forward</i> Go to Tracker
             </a>
         </div>
